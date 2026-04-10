@@ -1,0 +1,66 @@
+### macOS
+# Finder metadata
+.DS_Store
+
+# Thumbnails
+._*
+
+# Custom folder icons
+Icon
+
+### Node
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# Runtime data
+*.pid
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Build output
+dist/
+build/Release
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Framework build output and caches
+.cache
+.parcel-cache
+.next
+out/
+web/_fresh
+
+# dotenv environment variable files
+.env
+.env.local
+.env.*.local
+
+# data
+engine/data
+
+# npm cache directory
+.npm
+*.tgz
+
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/install-state.gz
+.pnp.*
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+
+# BB files
+.bb
+.trash

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!--
+    Zephyr Z mark — dark mode, transparent background
+    teal-400 Z for use on dark surfaces
+  -->
+  <path d="M 17 32 C 43 17 57 17 83 32"
+        stroke="#2dd4bf" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M 83 32 C 57 51 43 51 17 68"
+        stroke="#2dd4bf" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M 17 68 C 43 83 57 83 83 68"
+        stroke="#2dd4bf" stroke-width="9" fill="none" stroke-linecap="round"/>
+</svg>

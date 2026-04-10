@@ -1,0 +1,38 @@
+{
+  "name": "@zephyr/engine",
+  "version": "0.1.0",
+  "exports": ".",
+  "imports": {
+    "mysql2": "npm:mysql2",
+    "mysql2/promise": "npm:mysql2/promise",
+    "suncalc": "npm:suncalc@^1.9.0",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.6",
+    "@std/fs": "jsr:@std/fs@^1.0.23",
+    "@std/path": "jsr:@std/path@^1.1.4"
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-read --allow-write --allow-env main.ts",
+    "dev": "deno run --watch --allow-net --allow-read --allow-write --allow-env main.ts",
+    "check:types": "deno check ./main.ts",
+    "migrate": "deno run -A scripts/migrate-weewx.ts",
+    "dedup": "deno run -A scripts/dedup-observations.ts",
+    "format": "deno fmt"
+  },
+  "compilerOptions": {
+    "strict": true
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": [
+      "tests/"
+    ],
+    "exclude": [
+      "data/*"
+    ]
+  }
+}

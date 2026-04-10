@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "zephyr",
+  "project_id": "b79d919f-f2d0-4d0f-8717-f149b0d38b08"
+}

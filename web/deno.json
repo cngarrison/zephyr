@@ -1,0 +1,68 @@
+{
+  "name": "@zephyr/web",
+  "exports": ".",
+  "tasks": {
+    "check": "deno fmt --check . && deno lint . && deno check",
+    "dev": "vite",
+    "build": "vite build",
+    "start": "deno serve --port 8081 -A _fresh/server.js",
+    "update": "deno run -A -r jsr:@fresh/update .",
+    "check:types": "deno check ./main.ts",
+    "format": "deno fmt"
+  },
+  "lint": {
+    "rules": {
+      "tags": ["fresh", "recommended"]
+    }
+  },
+  "exclude": ["**/_fresh/*"],
+  "imports": {
+    "@/": "./",
+    "fresh": "jsr:@fresh/core@^2.2.2",
+    "preact": "npm:preact@^10.27.2",
+    "@preact/signals": "npm:@preact/signals@^2.5.0",
+    "@fresh/plugin-vite": "jsr:@fresh/plugin-vite@^1.0.8",
+    "vite": "npm:vite@^7.1.3",
+    "tailwindcss": "npm:tailwindcss@^4.1.10",
+    "@tailwindcss/vite": "npm:@tailwindcss/vite@^4.1.12",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.6",
+    "@std/dotenv/load": "jsr:@std/dotenv@^0.225.6/load",
+    "echarts": "npm:echarts@^6.0.0"
+  },
+  "compilerOptions": {
+    "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],
+    "jsx": "precompile",
+    "jsxImportSource": "preact",
+    "jsxPrecompileSkipElements": [
+      "a",
+      "img",
+      "source",
+      "body",
+      "html",
+      "head",
+      "title",
+      "meta",
+      "script",
+      "link",
+      "style",
+      "base",
+      "noscript",
+      "template"
+    ],
+    "types": ["vite/client"]
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": [
+      "tests/"
+    ],
+    "exclude": [
+      "static/**/*.svg"
+    ]
+  }
+}

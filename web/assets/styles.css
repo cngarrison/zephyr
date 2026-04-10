@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* ── Light mode defaults ──────────────────────────────────────────────────── */
+:root {
+  --color-bg: #f8fafc;
+  --color-card: #ffffff;
+  --color-card-border: #e2e8f0;
+  --color-label: #0d9488;
+  --color-nav-bg: #0f766e;
+  --color-nav-text: #ffffff;
+
+  /* Legacy compatibility vars */
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+  --color-accent: #0d9488;
+}
+
+/* ── Dark mode overrides ──────────────────────────────────────────────────── */
+.dark {
+  --color-bg: #020617;
+  --color-card: #1e293b;
+  --color-card-border: #334155;
+  --color-label: #2dd4bf;
+  --color-nav-bg: #134e4a;
+  --color-nav-text: #ccfbf1;
+
+  /* Legacy compatibility vars */
+  --color-surface: #1e293b;
+  --color-border: #334155;
+  --color-text: #f1f5f9;
+  --color-muted: #94a3b8;
+  --color-accent: #38bdf8;
+}
+
+/* ── Utility classes ──────────────────────────────────────────────────────── */
+.card {
+  background-color: var(--color-card);
+  border: 1px solid var(--color-card-border);
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* shadow-sm */
+  padding: 1rem; /* p-4 */
+}
+
+.label-text {
+  color: var(--color-label);
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 600; /* font-semibold */
+  text-transform: uppercase;
+  letter-spacing: 0.05em; /* tracking-wide */
+}

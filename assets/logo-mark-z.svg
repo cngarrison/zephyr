@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!--
+    Zephyr Z mark — transparent background, teal Z
+    Use where the background colour is provided by context.
+  -->
+  <path d="M 17 32 C 43 17 57 17 83 32"
+        stroke="#0d9488" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M 83 32 C 57 51 43 51 17 68"
+        stroke="#0d9488" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M 17 68 C 43 83 57 83 83 68"
+        stroke="#0d9488" stroke-width="9" fill="none" stroke-linecap="round"/>
+</svg>
