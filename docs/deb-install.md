@@ -43,46 +43,35 @@ The package will:
 
 ## 3. Configure
 
-Copy the example env files and edit them before the services will work
-correctly:
+Copy the example config file and edit it before the services will start correctly:
 
 ```bash
-sudo cp /etc/zephyr/engine.env.example /etc/zephyr/engine.env
-sudo cp /etc/zephyr/web.env.example    /etc/zephyr/web.env
-sudo cp /etc/zephyr/app.env.example    /etc/zephyr/app.env
+sudo cp /etc/zephyr/zephyr.toml.example /etc/zephyr/zephyr.toml
+sudo nano /etc/zephyr/zephyr.toml
 ```
 
-Edit each file:
+Key values to set:
 
-```bash
-sudo nano /etc/zephyr/app.env      # station name, lat/lon, timezone
-sudo nano /etc/zephyr/engine.env   # ENGINE_PORT, DB_PROVIDER, SQLITE_PATH, etc.
-sudo nano /etc/zephyr/web.env      # PORT, WEB_ENGINE_URL
+```toml
+[[stations]]
+id       = "home"
+name     = "My Weather Station"
+lat      = xx.xxxx
+lon      = xx.xxxx
+altitude = xx
+timezone = "Australia/Sydney"   # IANA timezone string
+
+[storage.sqlite]
+path = "/var/lib/zephyr/zephyr.db"
 ```
 
-Key values to set in `app.env`:
+The file is well-commented — see [`docs/configure.md`](./configure.md) for a full reference.
+
+Set the correct permissions:
 
 ```bash
-STATION_NAME=My Weather Station
-STATION_LAT=xx.xxxx
-STATION_LON=xx.xxxx
-STATION_ALTITUDE_M=xx
-STATION_TIMEZONE=Australia/Sydney   # IANA timezone string
-```
-
-Key values to set in `engine.env`:
-
-```bash
-ENGINE_PORT=8080
-DB_PROVIDER=sqlite
-SQLITE_PATH=/var/lib/zephyr/zephyr.db
-```
-
-Key values to set in `web.env`:
-
-```bash
-PORT=8081
-WEB_ENGINE_URL=http://127.0.0.1:8080
+sudo chmod 640 /etc/zephyr/zephyr.toml
+sudo chown root:zephyr /etc/zephyr/zephyr.toml
 ```
 
 ## 4. Start

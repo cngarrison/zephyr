@@ -213,8 +213,7 @@ Supports `x86_64` and `aarch64` (including Raspberry Pi 4/5 running 64-bit OS).
 
 ### `.deb` package (Debian / Ubuntu)
 
-For `.deb`-managed installs with `apt upgrade` support, see
-[`docs/deb-install.md`](docs/deb-install.md).
+For `.deb`-managed installs with `apt upgrade` support, see [`docs/deb-install.md`](docs/deb-install.md).
 
 ### After installing
 
@@ -228,15 +227,39 @@ sudo systemctl enable --now zephyr.target
 journalctl -u zephyr-engine -u zephyr-web -f
 ```
 
+## Documentation
+
+Full documentation is in the [`docs/`](./docs/) directory.
+
+| Document | Description |
+|---|---|
+| [docs/install.md](./docs/install.md) | All install methods — one-liner, `.deb`, manual, from source |
+| [docs/deb-install.md](./docs/deb-install.md) | Detailed `.deb` guide including upgrade and removal |
+| [docs/configure.md](./docs/configure.md) | Full `zephyr.toml` configuration reference |
+| [docs/api.md](./docs/api.md) | REST API reference — all endpoints, parameters, curl examples |
+| [docs/consumers.md](./docs/consumers.md) | Building your own dashboard or integration against the engine API |
+| [docs/drivers.md](./docs/drivers.md) | Writing a new ingest driver (push or LAN poller) |
+| [docs/storage-adapters.md](./docs/storage-adapters.md) | Implementing a new storage adapter |
+| [docs/themes.md](./docs/themes.md) | Creating a new UI theme |
+| [docs/ai-assisted-development.md](./docs/ai-assisted-development.md) | AI-first contribution guide — prompt templates, common pitfalls |
+
+---
+
 ## Contributing
 
-Contributions welcome. Key areas for community extension:
+Contributions are welcome and AI-assisted contributions are first-class. The recommended path for most new features is to use a coding assistant with [AGENTS.md](./AGENTS.md) loaded as context — it contains all the project rules, file structure, and step-by-step guides an LLM needs to generate correct code.
 
+See **[docs/ai-assisted-development.md](./docs/ai-assisted-development.md)** for ready-to-use prompt templates for common contribution types (new ingest driver, storage adapter, web route, theme).
+
+Key areas for community extension:
+
+- **Ingest drivers** — support for additional weather station hardware (`engine/src/ingest/`)
 - **Storage adapters** — implement `StorageAdapter` interface (`engine/src/storage/adapter.ts`)
-- **Ingest drivers** — additional hardware protocols (`engine/src/ingest/`)
 - **Cloud uploaders** — Weather Underground, CWOP, Ecowitt cloud, etc.
 - **Web themes** — alternative Tailwind/CSS themes
 - **LAN API poller parsing** — complete the device LAN API JSON → Observation mapping (`engine/src/ingest/poller.ts`)
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full setup instructions and PR process.
 
 ## License
 
