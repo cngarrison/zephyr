@@ -1,6 +1,6 @@
 [Unit]
 Description=Zephyr Weather Station
-Documentation=https://github.com/your-org/zephyr
+Documentation=https://github.com/cngarrison/zephyr
 
 # A systemd target is a synchronisation point — it has no ExecStart of its own.
 # Both zephyr-engine.service and zephyr-web.service declare

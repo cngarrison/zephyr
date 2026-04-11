@@ -26,7 +26,7 @@ maintainer: Zephyr Contributors <noreply@github.com>
 description: |
   Zephyr weather station daemon suite.
   Self-hosted weather engine and web UI, managed via systemd.
-homepage: https://github.com/your-org/zephyr
+homepage: https://github.com/cngarrison/zephyr
 license: MIT
 
 depends:

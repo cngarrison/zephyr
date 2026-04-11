@@ -17,11 +17,11 @@ Find the correct architecture for your server:
 dpkg --print-architecture   # amd64  or  arm64
 ```
 
-Download the matching `.deb` from the [Releases page](https://github.com/your-org/zephyr/releases):
+Download the matching `.deb` from the [Releases page](https://github.com/cngarrison/zephyr/releases):
 
 ```bash
 # Replace <version> and <arch> as appropriate, e.g. 0.1.1 and amd64
-wget https://github.com/your-org/zephyr/releases/download/v<version>/zephyr_<version>_<arch>.deb
+wget https://github.com/cngarrison/zephyr/releases/download/v<version>/zephyr_<version>_<arch>.deb
 ```
 
 ## 2. Install

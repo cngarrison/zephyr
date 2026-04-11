@@ -25,12 +25,11 @@ weewx is a capable system but has accumulated complexity over many years of Pyth
 - Daily/weekly/monthly graphs (Apache ECharts)
 - Tailwind v4 dark theme
 - weewx data migration script
-
-### Planned
-- Live updates via SSE or polling islands
 - Almanac (sunrise/sunset, moon phase)
 - MySQL storage adapter
-- Systemd service units for Raspberry Pi
+- Live updates via SSE or polling islands
+
+### Planned
 - Third-party embeds (Windy Map, BOM radar, etc.)
 - Cloud upload adapters (Weather Underground, Ecowitt, CWOP)
 - Static HTML export for HomeAssistant integration
@@ -61,8 +60,8 @@ Two Deno packages in a workspace:
 
 ### Prerequisites
 
-- [Deno](https://deno.com) v2.2+
-- Ecowitt GW1000 (or compatible) gateway on your LAN
+- [Deno](https://deno.com) v2.2+ *(development only — not required for binary or package installs)*
+- A personal weather station with a network gateway. Ecowitt GW1000-series gateways are currently supported via WU push, Ecowitt push, and LAN API polling. Support for additional hardware is planned.
 
 ### Setup
 
@@ -163,9 +162,44 @@ deno task web:build
 deno task start
 ```
 
-## Raspberry Pi Deployment
+## Installation (Linux server)
 
-Systemd service units are planned. For now, run engine and web as background processes or use `tmux`/`screen`. The engine should be run from the `engine/` directory so it picks up its `.env` file.
+### One-liner (tarball)
+
+Installs the latest release, creates the `zephyr` system user, installs systemd
+units, and prints next steps:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cngarrison/zephyr/main/scripts/install.sh | sudo bash
+```
+
+Pin to a specific version:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cngarrison/zephyr/main/scripts/install.sh | sudo bash -s v0.1.1
+```
+
+Supports `x86_64` and `aarch64` (including Raspberry Pi 4/5 running 64-bit OS).
+
+### `.deb` package (Debian / Ubuntu)
+
+For `.deb`-managed installs with `apt upgrade` support, see
+[`docs/deb-install.md`](docs/deb-install.md).
+
+### After installing
+
+Create config files from the installed examples, then start:
+
+```bash
+sudo cp /etc/zephyr/app.env.example    /etc/zephyr/app.env
+sudo cp /etc/zephyr/engine.env.example /etc/zephyr/engine.env
+sudo cp /etc/zephyr/web.env.example    /etc/zephyr/web.env
+
+sudo nano /etc/zephyr/app.env   # set station name, lat/lon, timezone
+
+sudo systemctl enable --now zephyr.target
+journalctl -u zephyr-engine -u zephyr-web -f
+```
 
 ## Contributing
 
