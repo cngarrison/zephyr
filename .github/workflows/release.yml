@@ -152,15 +152,16 @@ jobs:
               arm64) deno_target="aarch64-unknown-linux-gnu" ;;
             esac
 
-            # Stage the right binaries for this arch
-            mkdir -p "dist/deb-${arch}"
-            cp "dist/zephyr-engine-${deno_target}" "dist/deb-${arch}/zephyr-engine"
-            cp "dist/zephyr-web-${deno_target}"    "dist/deb-${arch}/zephyr-web"
+            # Stage binaries to the fixed path that nfpm.yaml references.
+            # (nfpm env var expansion is unreliable in src: glob fields.)
+            rm -rf dist/deb-staging
+            mkdir -p dist/deb-staging
+            cp "dist/zephyr-engine-${deno_target}" dist/deb-staging/zephyr-engine
+            cp "dist/zephyr-web-${deno_target}"    dist/deb-staging/zephyr-web
 
             echo "==> .deb: $arch (source: $deno_target)"
             NFPM_ARCH="$arch" \
             NFPM_VERSION="$VERSION" \
-            BINARY_DIR="dist/deb-${arch}" \
               nfpm package \
                 --config deploy/nfpm.yaml \
                 --packager deb \
