@@ -20,17 +20,17 @@ export default function ChartsGrid({ from, to }: Props) {
       <ChartCard title="Temperature & Dew Point">
         <TemperatureChart from={from} to={to} />
       </ChartCard>
-      <ChartCard title="Pressure">
-        <PressureChart from={from} to={to} />
-      </ChartCard>
-      <ChartCard title="Humidity">
-        <HumidityChart from={from} to={to} />
+      <ChartCard title="Rain Rate">
+        <RainChart from={from} to={to} />
       </ChartCard>
       <ChartCard title="Wind Speed & Gust">
         <WindChart from={from} to={to} />
       </ChartCard>
-      <ChartCard title="Rain Rate">
-        <RainChart from={from} to={to} />
+      <ChartCard title="Humidity">
+        <HumidityChart from={from} to={to} />
+      </ChartCard>
+      <ChartCard title="Pressure">
+        <PressureChart from={from} to={to} />
       </ChartCard>
       <ChartCard title="UV Index">
         <UVChart from={from} to={to} />
