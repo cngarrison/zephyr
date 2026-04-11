@@ -8,7 +8,7 @@ Thanks for your interest in contributing! Zephyr is a self-hosted personal weath
 
 ## AI-Assisted Development
 
-The recommended workflow for most contributions — especially new ingest drivers — is with an LLM coding assistant (Claude, Copilot, Cursor, etc.).
+The recommended workflow for most contributions — especially new ingest drivers — is with an LLM coding assistant (Claude, Beyond Better, Copilot, Cursor, etc.).
 
 ### Before you start
 
