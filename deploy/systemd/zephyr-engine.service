@@ -1,6 +1,6 @@
 [Unit]
 Description=Zephyr Weather Engine
-Documentation=https://github.com/your-org/zephyr
+Documentation=https://github.com/cngarrison/zephyr
 
 # Wait for a routable network address before starting.
 # This is required when DB_PROVIDER=mysql and the database is on a remote host.
