@@ -5,7 +5,8 @@
     "check": "deno fmt --check . && deno lint . && deno check",
     "dev": "vite",
     "build": "vite build",
-    "start": "deno serve --port 8081 -A _fresh/server.js",
+    "start": "deno serve --port ${WEB_PORT:-8081} -A _fresh/server.js",
+    "start:prod": "deno run -A server.ts",
     "update": "deno run -A -r jsr:@fresh/update .",
     "check:types": "deno check ./main.ts",
     "format": "deno fmt"
