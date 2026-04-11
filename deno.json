@@ -9,6 +9,7 @@
     "web:dev": "deno task --cwd web dev",
     "web:build": "deno task --cwd web build",
     "web:start": "deno task --cwd web start",
+    "web:start:prod": "deno task --cwd web start:prod",
     "check:types:all": "deno task --cwd web check:types && deno task --cwd engine check:types",
     "check:types:engine": "deno task --cwd engine check:types",
     "check:types:web": "deno task --cwd web check:types",

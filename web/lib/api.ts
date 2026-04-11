@@ -1,11 +1,16 @@
 import type { AlmanacData, AggregateObservation, DailyAggregate, Observation, StationConfig, TodayStats } from "./types.ts";
 
 // Engine base URL — server-side only. Islands use the /api proxy route.
-const ENGINE_URL = Deno.env.get("WEB_ENGINE_URL") ?? "http://localhost:8080";
+// Read lazily on each call (not as a module-level constant) so that env vars
+// loaded by @std/dotenv/load in server.ts take effect even with static imports,
+// where the SSR bundle is hoisted and evaluates before dotenv runs.
+function engineUrl(): string {
+  return Deno.env.get("WEB_ENGINE_URL") ?? "http://localhost:8080";
+}
 
 export async function fetchStationConfig(): Promise<StationConfig> {
   try {
-    const resp = await fetch(`${ENGINE_URL}/api/config`);
+    const resp = await fetch(`${engineUrl()}/api/config`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json() as { station: StationConfig };
     return data.station;
@@ -23,7 +28,7 @@ export async function fetchStationConfig(): Promise<StationConfig> {
 
 export async function fetchLatest(): Promise<Observation | null> {
   try {
-    const resp = await fetch(`${ENGINE_URL}/api/observations/latest`);
+    const resp = await fetch(`${engineUrl()}/api/observations/latest`);
     if (!resp.ok) return null;
     return await resp.json() as Observation | null;
   } catch {
@@ -45,7 +50,7 @@ export async function fetchAggregates(
 ): Promise<AggregateObservation[]> {
   try {
     const qs = new URLSearchParams({ from, to, bucket });
-    const resp = await fetch(`${ENGINE_URL}/api/observations/aggregate?${qs}`);
+    const resp = await fetch(`${engineUrl()}/api/observations/aggregate?${qs}`);
     if (!resp.ok) return [];
     return await resp.json() as AggregateObservation[];
   } catch (err) {
@@ -58,7 +63,7 @@ export async function fetchDailyAggregates(year?: number): Promise<DailyAggregat
   try {
     const qs = new URLSearchParams();
     if (year !== undefined) qs.set("year", String(year));
-    const resp = await fetch(`${ENGINE_URL}/api/observations/daily?${qs}`);
+    const resp = await fetch(`${engineUrl()}/api/observations/daily?${qs}`);
     if (!resp.ok) return [];
     return await resp.json() as DailyAggregate[];
   } catch (err) {
@@ -69,7 +74,7 @@ export async function fetchDailyAggregates(year?: number): Promise<DailyAggregat
 
 export async function fetchTodayStats(): Promise<TodayStats | null> {
   try {
-    const resp = await fetch(`${ENGINE_URL}/api/observations/today`);
+    const resp = await fetch(`${engineUrl()}/api/observations/today`);
     if (!resp.ok) return null;
     return await resp.json() as TodayStats;
   } catch (err) {
@@ -82,7 +87,7 @@ export async function fetchAlmanac(date?: string): Promise<AlmanacData | null> {
   try {
     const qs = new URLSearchParams();
     if (date) qs.set('date', date);
-    const resp = await fetch(`${ENGINE_URL}/api/almanac?${qs}`);
+    const resp = await fetch(`${engineUrl()}/api/almanac?${qs}`);
     if (!resp.ok) return null;
     return await resp.json() as AlmanacData;
   } catch (err) {
@@ -101,7 +106,7 @@ export async function fetchObservations(
     if (params.limit !== undefined) qs.set("limit", String(params.limit));
     if (params.offset !== undefined) qs.set("offset", String(params.offset));
 
-    const resp = await fetch(`${ENGINE_URL}/api/observations?${qs}`);
+    const resp = await fetch(`${engineUrl()}/api/observations?${qs}`);
     if (!resp.ok) return [];
     return await resp.json() as Observation[];
   } catch {
