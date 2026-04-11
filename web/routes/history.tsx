@@ -2,7 +2,7 @@ import { page } from "fresh";
 import { define } from "@/utils.ts";
 import { fetchAlmanac, fetchDailyAggregates, fetchStationConfig } from "@/lib/api.ts";
 import type { AlmanacData, DailyAggregate } from "@/lib/types.ts";
-import Header from "@/components/layout/Header.tsx";
+import Header from "@/islands/Header.tsx";
 import NavTabs from "@/components/layout/NavTabs.tsx";
 import HeatmapTable from "@/components/history/HeatmapTable.tsx";
 import type { HeatmapTableProps } from "@/components/history/HeatmapTable.tsx";
@@ -220,7 +220,7 @@ export default define.page(function HistoryPage({ data }: { data: PageData }) {
 
   return (
     <div class="min-h-screen bg-[var(--color-bg)]">
-      <Header stationName={stationName} serverTime={serverTime} timezone={timezone} almanac={almanac} />
+      <Header stationName={stationName} initialTime={serverTime} timezone={timezone} almanac={almanac} />
       <NavTabs current={pathname} />
       <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
         <h2 class="text-xl font-bold">Weather Statistics</h2>

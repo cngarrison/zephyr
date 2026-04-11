@@ -1,9 +1,11 @@
 import ThemeToggle from '@/islands/ThemeToggle.tsx';
 import type { AlmanacData } from '@/lib/types.ts';
+import { lastObservationTime } from '@/lib/hooks/useObservationState.ts';
 
 interface HeaderProps {
   stationName: string;
-  serverTime: string;
+  /** ISO string from SSR — shown until the first observation poll updates the signal. */
+  initialTime: string;
   timezone?: string;
   almanac?: AlmanacData | null;
 }
@@ -45,36 +47,42 @@ function moonIconClass(phase: number): string {
   return `wi-moon-waning-crescent-${n}`;
 }
 
-export default function Header({ stationName, serverTime, timezone = 'UTC', almanac }: HeaderProps) {
-  const dt = new Date(serverTime);
+export default function Header({ stationName, initialTime, timezone = 'UTC', almanac }: HeaderProps) {
+  // Prefer the live observation timestamp; fall back to the SSR-rendered time
+  // until the first poll completes.
+  const displayTime = lastObservationTime.value ?? initialTime;
+  const dt = new Date(displayTime);
+
   const formattedDate = dt.toLocaleDateString('en-AU', {
     weekday: 'short',
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    timeZone: timezone,
   });
   const formattedTime = dt.toLocaleTimeString('en-AU', {
     hour: '2-digit',
     minute: '2-digit',
+    timeZone: timezone,
   });
 
   return (
     <header style="background-color: var(--color-nav-bg); color: var(--color-nav-text);">
       <div class="flex items-center gap-3 px-4 py-2">
 
-        {/* ── Logo ───────────────────────────────────────────────────── */}
+        {/* ── Logo ────────────────────────────────────────────────────── */}
         <a href="/" class="shrink-0 flex items-center">
           <img src="/logo.svg" alt="Zephyr" height="40" class="h-10 w-auto dark:hidden" />
           <img src="/logo-dark.svg" alt="Zephyr" height="40" class="h-10 w-auto hidden dark:block" />
         </a>
 
-        {/* ── Station name + datetime (stacked) ──────────────────────── */}
+        {/* ── Station name + datetime (stacked) ────────────────────────── */}
         <div class="flex flex-col min-w-0 mr-auto">
           <span class="text-sm font-semibold leading-tight truncate">{stationName}</span>
           <span class="text-xs opacity-60 leading-tight">{formattedDate} · {formattedTime}</span>
         </div>
 
-        {/* ── Almanac box (top-right, 2 rows) ────────────────────────── */}
+        {/* ── Almanac box (top-right, 2 rows) ──────────────────────────── */}
         {almanac && (
           <a
             href="/almanac"
@@ -112,7 +120,7 @@ export default function Header({ stationName, serverTime, timezone = 'UTC', alma
           </a>
         )}
 
-        {/* ── Theme toggle ───────────────────────────────────────────── */}
+        {/* ── Theme toggle ─────────────────────────────────────────────────── */}
         <ThemeToggle />
       </div>
     </header>

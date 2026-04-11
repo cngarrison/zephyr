@@ -1,0 +1,45 @@
+#!/bin/bash
+# Debian postrm script for the zephyr package.
+# Called by dpkg after files are removed.
+#
+# Calling conventions:
+#   postrm remove                    — after file removal
+#   postrm purge                     — after purge (remove + wipe config/data)
+#   postrm upgrade <new-version>     — after upgrade
+#   postrm failed-upgrade <old-ver>
+#   postrm abort-install
+#   postrm abort-upgrade <old-ver>
+#   postrm disappear <overwriter> <overwriter-ver>
+set -e
+
+case "$1" in
+  remove)
+    # Reload systemd so it forgets the now-deleted unit files.
+    systemctl daemon-reload 2>/dev/null || true
+    ;;
+
+  purge)
+    # Full purge: remove configuration, data, and the system user.
+    # Per Debian policy, configuration and data are only removed on purge,
+    # not on a plain remove.
+
+    # Remove config and data directories.
+    rm -rf /etc/zephyr
+    rm -rf /var/lib/zephyr
+
+    # Remove the system user (and their primary group if no other members).
+    if getent passwd zephyr > /dev/null 2>&1; then
+      userdel zephyr 2>/dev/null || true
+    fi
+    if getent group zephyr > /dev/null 2>&1; then
+      groupdel zephyr 2>/dev/null || true
+    fi
+
+    systemctl daemon-reload 2>/dev/null || true
+    ;;
+
+  upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+esac
+
+exit 0

@@ -3,7 +3,7 @@ import { Head } from 'fresh/runtime';
 import { define } from '@/utils.ts';
 import { fetchAlmanac, fetchStationConfig } from '@/lib/api.ts';
 import type { AlmanacData } from '@/lib/types.ts';
-import Header from '@/components/layout/Header.tsx';
+import Header from '@/islands/Header.tsx';
 import NavTabs from '@/components/layout/NavTabs.tsx';
 
 // ---------------------------------------------------------------------------
@@ -145,7 +145,7 @@ export default define.page(function AlmanacPage({ data }: { data: PageData }) {
       <Head>
         <title>{stationName} — Almanac — Zephyr Weather</title>
       </Head>
-      <Header stationName={stationName} serverTime={serverTime} timezone={timezone} almanac={almanac} />
+      <Header stationName={stationName} initialTime={serverTime} timezone={timezone} almanac={almanac} />
       <NavTabs current="/almanac" />
 
       <main class="max-w-3xl mx-auto px-4 py-8 space-y-6">

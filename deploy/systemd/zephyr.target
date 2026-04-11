@@ -1,0 +1,19 @@
+[Unit]
+Description=Zephyr Weather Station
+Documentation=https://github.com/your-org/zephyr
+
+# A systemd target is a synchronisation point — it has no ExecStart of its own.
+# Both zephyr-engine.service and zephyr-web.service declare
+#   WantedBy=zephyr.target
+# in their [Install] sections, so enabling them registers them under this
+# target automatically.
+#
+# Useful commands:
+#   systemctl start zephyr.target      — start both daemons
+#   systemctl stop zephyr.target       — stop both daemons
+#   systemctl enable zephyr.target     — start both daemons at boot
+#   systemctl status zephyr.target     — overview of both units
+
+[Install]
+# Pull the whole stack into the standard multi-user boot target.
+WantedBy=multi-user.target

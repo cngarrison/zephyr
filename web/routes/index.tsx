@@ -3,7 +3,7 @@ import { Head } from "fresh/runtime";
 import { define } from "@/utils.ts";
 import { fetchAlmanac, fetchLatest, fetchStationConfig } from "@/lib/api.ts";
 import type { AlmanacData, Observation, StationConfig } from "@/lib/types.ts";
-import Header from "@/components/layout/Header.tsx";
+import Header from "@/islands/Header.tsx";
 import NavTabs from "@/components/layout/NavTabs.tsx";
 import CurrentConditions from "@/islands/CurrentConditions.tsx";
 import ChartsGrid from "@/components/conditions/ChartsGrid.tsx";
@@ -46,7 +46,7 @@ export default define.page(function Home({ data }: { data: PageData }) {
       <Head>
         <title>{station.name} — Zephyr Weather</title>
       </Head>
-      <Header stationName={station.name} serverTime={new Date().toISOString()} timezone={station.timezone} almanac={almanac} />
+      <Header stationName={station.name} initialTime={new Date().toISOString()} timezone={station.timezone} almanac={almanac} />
       <NavTabs current={pathname} />
       <main class="max-w-5xl mx-auto px-4 py-8">
         <CurrentConditions initial={latestObs} />

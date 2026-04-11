@@ -1,12 +1,12 @@
 import { Head } from 'fresh/runtime';
-import Header from '@/components/layout/Header.tsx';
+import Header from '@/islands/Header.tsx';
 import NavTabs from '@/components/layout/NavTabs.tsx';
 import AggregateChartsGrid from '@/components/conditions/AggregateChartsGrid.tsx';
 import type { AlmanacData } from '@/lib/types.ts';
 
 interface Props {
   stationName: string;
-  serverTime: string;
+  initialTime: string;
   timezone?: string;
   pathname: string;
   from: string;
@@ -17,14 +17,14 @@ interface Props {
 }
 
 export default function AggregateView(
-  { stationName, serverTime, timezone, pathname, from, to, bucket, title, almanac }: Props,
+  { stationName, initialTime, timezone, pathname, from, to, bucket, title, almanac }: Props,
 ) {
   return (
     <>
       <Head>
         <title>{stationName} — {title} — Zephyr Weather</title>
       </Head>
-      <Header stationName={stationName} serverTime={serverTime} timezone={timezone} almanac={almanac} />
+      <Header stationName={stationName} initialTime={initialTime} timezone={timezone} almanac={almanac} />
       <NavTabs current={pathname} />
       <main class="max-w-5xl mx-auto px-4 py-8">
         <h2
