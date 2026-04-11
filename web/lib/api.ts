@@ -13,6 +13,7 @@ export async function fetchStationConfig(): Promise<StationConfig> {
     const resp = await fetch(`${engineUrl()}/api/config`);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json() as { station: StationConfig };
+    //console.log('API: fetchStationConfig:', data);
     return data.station;
   } catch {
     return {
@@ -89,7 +90,9 @@ export async function fetchAlmanac(date?: string): Promise<AlmanacData | null> {
     if (date) qs.set('date', date);
     const resp = await fetch(`${engineUrl()}/api/almanac?${qs}`);
     if (!resp.ok) return null;
-    return await resp.json() as AlmanacData;
+    const data = await resp.json() as AlmanacData
+    //console.log('API: fetchAlmanac:', data);
+    return data;
   } catch (err) {
     console.error('fetchAlmanac error:', err);
     return null;
