@@ -3,7 +3,7 @@ Description=Zephyr Weather Engine
 Documentation=https://github.com/cngarrison/zephyr
 
 # Wait for a routable network address before starting.
-# This is required when DB_PROVIDER=mysql and the database is on a remote host.
+# This is required when storage.provider=mysql and the database is on a remote host.
 # If you use SQLite exclusively and want faster boot, you can relax this to
 # After=network.target (and remove the Wants= line).
 After=network-online.target
@@ -17,24 +17,12 @@ Type=exec
 User=zephyr
 Group=zephyr
 
-# Working directory.  @std/dotenv/load (imported by engine/config.ts) looks for
-# a .env file in the process working directory at startup.  On production there
-# is no .env file here — it silently no-ops.  All config comes from the
-# EnvironmentFile= entries below.
+# Working directory for the engine process.
 WorkingDirectory=/var/lib/zephyr
 
-# Environment files are merged in order; later files override earlier ones.
-#
-#   engine.env — daemon config: ENGINE_PORT, ENGINE_HOST, DB_PROVIDER,
-#                 SQLITE_PATH, MYSQL_*, ingest driver settings.
-#   app.env    — station identity: STATION_NAME, STATION_LAT/LON,
-#                 STATION_ALTITUDE_M, STATION_TIMEZONE, STATION_EXTRAS_JSON.
-#                 Shared with zephyr-web so both daemons see the same values.
-#
-# The ‘-’ prefix means systemd will not fail if the file does not yet exist
-# (useful during initial setup before the files have been created).
-EnvironmentFile=-/etc/zephyr/engine.env
-EnvironmentFile=-/etc/zephyr/app.env
+# Tell both daemons where to find the shared TOML config file.
+# The file must exist at this path (or override with ZEPHYR_CONFIG).
+Environment=ZEPHYR_CONFIG=/etc/zephyr/zephyr.toml
 
 ExecStart=/usr/local/bin/zephyr-engine
 

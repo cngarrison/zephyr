@@ -1,7 +1,8 @@
 import type { StorageAdapter } from "./adapter.ts";
+import { config } from "../../config.ts";
 
 export async function createStorageAdapter(): Promise<StorageAdapter> {
-  const provider = Deno.env.get("DB_PROVIDER") ?? "sqlite";
+  const provider = config.storage.provider;
   switch (provider) {
     case "sqlite": {
       const { createAdapter } = await import("./providers/sqlite/index.ts");
@@ -12,6 +13,6 @@ export async function createStorageAdapter(): Promise<StorageAdapter> {
       return createAdapter();
     }
     default:
-      throw new Error(`Unknown DB_PROVIDER: "${provider}". Supported: sqlite, mysql`);
+      throw new Error(`Unknown storage provider: "${provider}". Supported: sqlite, mysql`);
   }
 }

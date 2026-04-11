@@ -11,7 +11,7 @@ set -e
 
 case "$1" in
   configure)
-    # ── 1. System user ──────────────────────────────────────────────────────────
+    # ── 1. System user ────────────────────────────────────────────────────────────
     if ! getent passwd zephyr > /dev/null 2>&1; then
       useradd \
         --system \
@@ -22,22 +22,32 @@ case "$1" in
         zephyr
     fi
 
-    # ── 2. Data directory ────────────────────────────────────────────────────
+    # ── 2. Data directory ───────────────────────────────────────────────────────
     mkdir -p /var/lib/zephyr
     chown zephyr:zephyr /var/lib/zephyr
     chmod 0750 /var/lib/zephyr
 
-    # ── 3. Config directory ──────────────────────────────────────────────────
+    # ── 3. Config directory ─────────────────────────────────────────────────────
     # Lock down /etc/zephyr so only root and the zephyr group can read it.
-    # The .env files may contain credentials (DB passwords, API keys).
+    # zephyr.toml may contain credentials (DB passwords, API keys).
     if [ -d /etc/zephyr ]; then
       chown root:zephyr /etc/zephyr
       chmod 0750 /etc/zephyr
-      # Example files contain no secrets; keep them world-readable.
+      # Example file contains no secrets; keep it world-readable.
       chmod 0644 /etc/zephyr/*.example 2>/dev/null || true
     fi
 
-    # ── 4. systemd ───────────────────────────────────────────────────────────
+    # ── 4. Bootstrap zephyr.toml from example if not present ────────────────────
+    # On first install, copy the example config into place so the daemons can
+    # start.  On upgrades the existing file is left untouched (noreplace).
+    if [ ! -f /etc/zephyr/zephyr.toml ]; then
+      cp /etc/zephyr/zephyr.toml.example /etc/zephyr/zephyr.toml
+      chown root:zephyr /etc/zephyr/zephyr.toml
+      chmod 0640 /etc/zephyr/zephyr.toml
+      echo "Zephyr: created /etc/zephyr/zephyr.toml from example — edit before starting."
+    fi
+
+    # ── 5. systemd ──────────────────────────────────────────────────────────────────
     # Reload the unit database so the new unit files are visible.
     systemctl daemon-reload 2>/dev/null || true
 

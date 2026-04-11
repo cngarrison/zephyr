@@ -1,6 +1,6 @@
 import type { StorageAdapter } from "../storage/adapter.ts";
 import { normalizeEcowitt, normalizeWu } from "./normalizer.ts";
-import { config } from "../../config.ts";
+import { config, primaryStation } from "../../config.ts";
 
 /** Write raw ingest params to data/ for debugging. Fire-and-forget. */
 async function dumpDebug(protocol: string, params: Record<string, string>): Promise<void> {
@@ -20,8 +20,9 @@ export function createIngestHandler(storage: StorageAdapter) {
     // WU protocol: GET /ingest/wu?action=updateraw&ID=...&tempf=...
     if (url.pathname === "/ingest/wu" && req.method === "GET") {
       const params = Object.fromEntries(url.searchParams.entries());
-      if (config.ingest.push.debugDump) dumpDebug("wu", params);
-      const { observation, readings } = normalizeWu(params, config.station.name);
+      const station = primaryStation();
+      if (station.ingest.push.debugDump) dumpDebug("wu", params);
+      const { observation, readings } = normalizeWu(params, station.id);
       await storage.insert(observation);
       if (readings.length > 0) await storage.insertReadings(readings);
       console.info(
@@ -34,8 +35,9 @@ export function createIngestHandler(storage: StorageAdapter) {
     if (url.pathname === "/ingest/ecowitt" && req.method === "POST") {
       const body = await req.text();
       const params = Object.fromEntries(new URLSearchParams(body).entries());
-      if (config.ingest.push.debugDump) dumpDebug("ecowitt", params);
-      const { observation, readings } = normalizeEcowitt(params, config.station.name);
+      const station = primaryStation();
+      if (station.ingest.push.debugDump) dumpDebug("ecowitt", params);
+      const { observation, readings } = normalizeEcowitt(params, station.id);
       await storage.insert(observation);
       if (readings.length > 0) await storage.insertReadings(readings);
       console.info(

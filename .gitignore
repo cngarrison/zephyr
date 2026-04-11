@@ -42,6 +42,7 @@ web/_fresh
 .env
 .env.local
 .env.*.local
+zephyr.toml
 
 # data
 engine/data

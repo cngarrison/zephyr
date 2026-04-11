@@ -4,24 +4,6 @@ import { parse } from "@std/toml";
 // Interfaces
 // ---------------------------------------------------------------------------
 
-export interface IngestPushConfig {
-  enabled: boolean;
-  debugDump: boolean;
-  deviceIds: Record<string, string>;
-}
-
-export interface IngestPollConfig {
-  enabled: boolean;
-  gwHost: string;
-  gwPort: number;
-  intervalSeconds: number;
-}
-
-export interface IngestConfig {
-  push: IngestPushConfig;
-  poll: IngestPollConfig;
-}
-
 export interface StationConfig {
   id: string;
   name: string;
@@ -29,30 +11,6 @@ export interface StationConfig {
   lon: number;
   altitude: number;
   timezone: string;
-  ingest: IngestConfig;
-}
-
-export interface StorageSqliteConfig {
-  path: string;
-}
-
-export interface StorageMysqlConfig {
-  host: string;
-  port: number;
-  user: string;
-  password: string;
-  database: string;
-}
-
-export interface StorageConfig {
-  provider: "sqlite" | "mysql";
-  sqlite: StorageSqliteConfig;
-  mysql?: StorageMysqlConfig;
-}
-
-export interface EngineServerConfig {
-  port: number;
-  host: string;
 }
 
 export interface WebConfig {
@@ -60,14 +18,12 @@ export interface WebConfig {
 }
 
 export interface Config {
-  engine: EngineServerConfig;
   web: WebConfig;
-  storage: StorageConfig;
   stations: StationConfig[];
 }
 
 // ---------------------------------------------------------------------------
-// Path resolution (identical logic in web/lib/config.ts)
+// Path resolution (identical logic in engine/config.ts)
 // ---------------------------------------------------------------------------
 
 function resolveConfigPath(): string {
@@ -92,8 +48,17 @@ function loadConfig(): Config {
   let raw: string;
   try {
     raw = Deno.readTextFileSync(configPath);
-  } catch (err) {
-    throw new Error(`Failed to read Zephyr config at ${configPath}: ${err}`);
+  } catch {
+    // In development the production path won't exist; fall back to defaults
+    // so the web server can start without a config file present.
+    console.warn(
+      `[zephyr/web] Config file not found at ${configPath}; using defaults. ` +
+        `Set ZEPHYR_CONFIG or pass --config <path> to override.`,
+    );
+    return {
+      web: { engineUrl: "http://localhost:8080" },
+      stations: [],
+    };
   }
 
   // deno-lint-ignore no-explicit-any
@@ -107,46 +72,12 @@ function loadConfig(): Config {
     lon: s.lon ?? 0,
     altitude: s.altitude ?? 0,
     timezone: s.timezone ?? "UTC",
-    ingest: {
-      push: {
-        enabled: s.ingest?.push?.enabled ?? true,
-        debugDump: s.ingest?.push?.debug_dump ?? false,
-        deviceIds: s.ingest?.push?.device_ids ?? {},
-      },
-      poll: {
-        enabled: s.ingest?.poll?.enabled ?? false,
-        gwHost: s.ingest?.poll?.gw_host ?? "192.168.1.100",
-        gwPort: s.ingest?.poll?.gw_port ?? 45000,
-        intervalSeconds: s.ingest?.poll?.interval_seconds ?? 60,
-      },
-    },
   }));
 
-  const storage: StorageConfig = {
-    provider: t.storage?.provider ?? "sqlite",
-    sqlite: {
-      path: t.storage?.sqlite?.path ?? "/var/lib/zephyr/zephyr.db",
-    },
-  };
-  if (t.storage?.mysql) {
-    storage.mysql = {
-      host: t.storage.mysql.host ?? "localhost",
-      port: t.storage.mysql.port ?? 3306,
-      user: t.storage.mysql.user ?? "",
-      password: t.storage.mysql.password ?? "",
-      database: t.storage.mysql.database ?? "",
-    };
-  }
-
   return {
-    engine: {
-      port: t.engine?.port ?? 8080,
-      host: t.engine?.host ?? "0.0.0.0",
-    },
     web: {
       engineUrl: t.web?.engine_url ?? "http://localhost:8080",
     },
-    storage,
     stations,
   };
 }

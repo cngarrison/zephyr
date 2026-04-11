@@ -9,8 +9,8 @@ export interface SunTimes {
   sunrise: string | null;
   sunset: string | null;
   solarNoon: string | null;
-  dawn: string | null;      // civil twilight begin
-  dusk: string | null;      // civil twilight end
+  dawn: string | null; // civil twilight begin
+  dusk: string | null; // civil twilight end
   goldenHourEnd: string | null;
   goldenHour: string | null;
   dayLengthSeconds: number;
@@ -19,14 +19,14 @@ export interface SunTimes {
 export interface MoonData {
   rise: string | null;
   set: string | null;
-  fraction: number;   // 0–1 illuminated fraction
-  phase: number;      // 0–1 (0 = new, 0.5 = full, 1 = new again)
+  fraction: number; // 0–1 illuminated fraction
+  phase: number; // 0–1 (0 = new, 0.5 = full, 1 = new again)
   phaseName: string;
   angle: number;
 }
 
 export interface AlmanacData {
-  date: string;       // YYYY-MM-DD
+  date: string; // YYYY-MM-DD
   sun: SunTimes;
   moon: MoonData;
 }
@@ -63,11 +63,13 @@ function getPhaseName(phase: number): string {
  * @param lon   Longitude in decimal degrees (positive = east)
  */
 export function computeAlmanac(date: Date, lat: number, lon: number): AlmanacData {
+  //console.log('[AlmanacCalculator] date/lat/long', { date, lat, lon });
   const dateStr = date.toISOString().slice(0, 10);
 
   const sunTimes = SunCalc.getTimes(date, lat, lon);
   const moonIllum = SunCalc.getMoonIllumination(date);
   const moonTimes = SunCalc.getMoonTimes(date, lat, lon);
+  //console.log('[AlmanacCalculator] moonTimes', moonTimes);
 
   const sunriseDate = sunTimes.sunrise;
   const sunsetDate = sunTimes.sunset;
