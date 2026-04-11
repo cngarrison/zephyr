@@ -1,0 +1,207 @@
+name: Release
+
+# Triggered by any version tag: v1.2.3, v1.2.3-rc.1, v0.9.0-beta.2, etc.
+# Use scripts/tag-release.sh to create and push tags correctly.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # required to create GitHub Releases
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # build: compile all targets, package archives, build .deb files
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build & package
+    runs-on: ubuntu-latest
+
+    outputs:
+      version:    ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+          cache: true
+
+      # Derive version string and pre-release flag from the git tag.
+      # Pre-release: tag matches vX.Y.Z-<alpha-suffix>  e.g. v1.0.0-rc.1
+      - name: Resolve version
+        id: version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG"         >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-[a-zA-Z] ]]; then
+            echo "prerelease=true"  >> $GITHUB_OUTPUT
+          else
+            echo "prerelease=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Fresh (web) must be built before compiling the web binary; it produces
+      # web/_fresh/compiled-entry.js which is the compile entrypoint.
+      - name: Build Fresh web assets
+        run: deno task --cwd web build
+
+      # Compile the engine binary for all four targets.
+      # Flags mirror the local `compile:engine` task in root deno.json.
+      - name: Compile engine (all targets)
+        run: |
+          mkdir -p dist
+          ENGINE_FLAGS="--allow-net --allow-env \
+            --allow-read=.env,./data,/var/lib/zephyr,/etc/zephyr \
+            --allow-write=./data,/var/lib/zephyr"
+
+          for target in \
+            x86_64-unknown-linux-gnu \
+            aarch64-unknown-linux-gnu \
+            x86_64-apple-darwin \
+            aarch64-apple-darwin; do
+
+            echo "==> engine: $target"
+            # shellcheck disable=SC2086
+            deno compile $ENGINE_FLAGS \
+              --target "$target" \
+              --output "dist/zephyr-engine-${target}" \
+              engine/main.ts
+          done
+
+      # Compile the web binary for all four targets.
+      # Must run from within web/ so that --include _fresh and --include static
+      # resolve correctly (they are relative paths inside web/).
+      # Flags mirror the local `compile:web` task.
+      - name: Compile web (all targets)
+        run: |
+          WEB_FLAGS="--allow-net --allow-env --allow-read=.env"
+
+          for target in \
+            x86_64-unknown-linux-gnu \
+            aarch64-unknown-linux-gnu \
+            x86_64-apple-darwin \
+            aarch64-apple-darwin; do
+
+            echo "==> web: $target"
+            # shellcheck disable=SC2086
+            (cd web && deno compile $WEB_FLAGS \
+              --include _fresh \
+              --include static \
+              --target "$target" \
+              --output "../dist/zephyr-web-${target}" \
+              _fresh/compiled-entry.js)
+          done
+
+      # Create one .tar.gz archive per platform containing:
+      #   zephyr-engine  zephyr-web  deploy/  README.md
+      - name: Package binary archives
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          mkdir -p release
+
+          declare -A PLATFORMS=(
+            [x86_64-unknown-linux-gnu]=linux-amd64
+            [aarch64-unknown-linux-gnu]=linux-arm64
+            [x86_64-apple-darwin]=darwin-amd64
+            [aarch64-apple-darwin]=darwin-arm64
+          )
+
+          for target in "${!PLATFORMS[@]}"; do
+            platform="${PLATFORMS[$target]}"
+            staging="staging/$platform"
+            mkdir -p "$staging"
+
+            cp "dist/zephyr-engine-${target}" "$staging/zephyr-engine"
+            cp "dist/zephyr-web-${target}"    "$staging/zephyr-web"
+            cp -r deploy                       "$staging/deploy"
+            cp README.md                       "$staging/README.md"
+
+            tar -czf "release/zephyr-v${VERSION}-${platform}.tar.gz" \
+              -C "$staging" .
+
+            echo "Created: zephyr-v${VERSION}-${platform}.tar.gz"
+          done
+
+      # Install nfpm (pinned version for reproducibility).
+      # Check https://github.com/goreleaser/nfpm/releases for newer versions.
+      - name: Install nfpm
+        run: |
+          NFPM_VER="2.38.0"
+          curl -fsSL \
+            "https://github.com/goreleaser/nfpm/releases/download/v${NFPM_VER}/nfpm_${NFPM_VER}_Linux_x86_64.tar.gz" \
+            | tar -xz nfpm
+          sudo mv nfpm /usr/local/bin/nfpm
+          nfpm --version
+
+      # Build one .deb per Linux architecture.
+      # nfpm reads deploy/nfpm.yaml; BINARY_DIR points at pre-staged binaries.
+      - name: Build .deb packages
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          for arch in amd64 arm64; do
+            case "$arch" in
+              amd64) deno_target="x86_64-unknown-linux-gnu" ;;
+              arm64) deno_target="aarch64-unknown-linux-gnu" ;;
+            esac
+
+            # Stage the right binaries for this arch
+            mkdir -p "dist/deb-${arch}"
+            cp "dist/zephyr-engine-${deno_target}" "dist/deb-${arch}/zephyr-engine"
+            cp "dist/zephyr-web-${deno_target}"    "dist/deb-${arch}/zephyr-web"
+
+            echo "==> .deb: $arch (source: $deno_target)"
+            NFPM_ARCH="$arch" \
+            NFPM_VERSION="$VERSION" \
+            BINARY_DIR="dist/deb-${arch}" \
+              nfpm package \
+                --config deploy/nfpm.yaml \
+                --packager deb \
+                --target "release/zephyr_${VERSION}_${arch}.deb"
+
+            echo "Created: zephyr_${VERSION}_${arch}.deb"
+          done
+
+      - name: List release artifacts
+        run: ls -lh release/
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifacts
+          path: release/*
+          retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # release: download artifacts and publish the GitHub Release
+  # ---------------------------------------------------------------------------
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: release
+
+      - name: List downloaded artifacts
+        run: ls -lh release/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name:               ${{ github.ref_name }}
+          name:                   "Zephyr ${{ github.ref_name }}"
+          generate_release_notes: true
+          prerelease:             ${{ needs.build.outputs.prerelease }}
+          files:                  release/*

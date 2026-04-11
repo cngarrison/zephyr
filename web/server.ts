@@ -3,10 +3,11 @@
  *
  * Usage:
  *   deno task build          # compile routes + islands with Vite
- *   deno task start:prod     # serve on WEB_PORT (default 8081)
+ *   deno task start:prod     # serve on PORT (default 8081; WEB_PORT accepted as fallback)
  *
- * This file is also the deno compile target for zephyr-x9s:
- *   deno compile -A --output zephyr-web server.ts
+ * For `deno compile` (zephyr-x9s), the compile target is the Fresh-generated
+ * _fresh/compiled-entry.js (not this file) — it embeds all assets and reads
+ * PORT natively.  This file is used for `deno run` / `deno task start:prod`.
  *
  * Unlike main.ts (used by Vite / deno serve), this file owns the HTTP server
  * via Deno.serve so that WEB_PORT is respected at runtime rather than as a
@@ -20,7 +21,11 @@ import '@std/dotenv/load';
 // @ts-ignore — _fresh/server.js is produced at build time, not present in source
 import app from './_fresh/server.js';
 
-const port = parseInt(Deno.env.get('WEB_PORT') ?? '8081', 10);
+// PORT is the primary variable — matches the Fresh v2 compiled-entry convention
+// and the PORT= key in /etc/zephyr/web.env (loaded by the systemd unit).
+// WEB_PORT is kept as a legacy fallback for local .env files that predate
+// this change (see issues zephyr-9go / zephyr-x9s).
+const port = parseInt(Deno.env.get('PORT') ?? Deno.env.get('WEB_PORT') ?? '8081', 10);
 
 console.log(`Zephyr Web → http://localhost:${port}/`);
 Deno.serve({ port }, (req: Request) =>

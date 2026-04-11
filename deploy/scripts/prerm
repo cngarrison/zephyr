@@ -1,0 +1,42 @@
+#!/bin/bash
+# Debian prerm script for the zephyr package.
+# Called by dpkg before files are removed.
+#
+# Calling conventions:
+#   prerm remove                     — before package removal
+#   prerm upgrade <new-version>      — before upgrade (postinst will restart)
+#   prerm deconfigure ...            — when deconfiguring due to conflict
+#   prerm failed-upgrade <old-ver>   — if a previous upgrade failed
+set -e
+
+systemctl_stop() {
+  if command -v systemctl > /dev/null 2>&1; then
+    systemctl stop zephyr.target 2>/dev/null || true
+  fi
+}
+
+case "$1" in
+  remove|deconfigure)
+    # Disable and stop services before removal.
+    # postinst is NOT called after removal, so we disable here.
+    if command -v systemctl > /dev/null 2>&1; then
+      systemctl stop zephyr.target 2>/dev/null || true
+      systemctl disable \
+        zephyr-engine.service \
+        zephyr-web.service \
+        zephyr.target \
+        2>/dev/null || true
+    fi
+    ;;
+
+  upgrade)
+    # Stop services before upgrade; postinst configure will re-enable and
+    # restart them once the new binaries and unit files are in place.
+    systemctl_stop
+    ;;
+
+  failed-upgrade)
+    ;;
+esac
+
+exit 0

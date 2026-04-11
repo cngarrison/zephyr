@@ -1,0 +1,50 @@
+[Unit]
+Description=Zephyr Weather Web UI
+Documentation=https://github.com/your-org/zephyr
+
+# The web daemon makes server-side HTTP requests to the engine (WEB_ENGINE_URL)
+# for SSR data fetches, so a working network is required.
+After=network-online.target zephyr-engine.service
+Wants=network-online.target
+
+# Declare a dependency on the engine.  zephyr-web will still start even if
+# zephyr-engine fails (Requires= would stop it); it just won't serve live data
+# until the engine comes up.  Use Requires= here if you prefer strict coupling.
+BindsTo=zephyr-engine.service
+
+[Service]
+Type=exec
+
+# Run as the dedicated zephyr system user.
+# Create with: useradd -r -s /sbin/nologin -d /var/lib/zephyr -M zephyr
+User=zephyr
+Group=zephyr
+
+WorkingDirectory=/var/lib/zephyr
+
+# Environment files are merged in order.
+#
+#   web.env — daemon config: PORT, HOSTNAME, WEB_ENGINE_URL.
+#   app.env — station identity (shared with engine).  The web server reads
+#              STATION_* for SSR pages that don’t proxy to /api/config
+#              (e.g. initial page load before the engine has responded).
+EnvironmentFile=-/etc/zephyr/web.env
+EnvironmentFile=-/etc/zephyr/app.env
+
+ExecStart=/usr/local/bin/zephyr-web
+
+Restart=on-failure
+RestartSec=5s
+
+# Shares the /run/zephyr/ runtime directory created by zephyr-engine.service.
+RuntimeDirectory=zephyr
+RuntimeDirectoryMode=0755
+
+# View logs with:
+#   journalctl -u zephyr-web -f
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=zephyr-web
+
+[Install]
+WantedBy=zephyr.target

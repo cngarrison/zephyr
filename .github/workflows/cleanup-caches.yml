@@ -1,0 +1,31 @@
+name: Cleanup Action Caches
+
+on:
+  schedule:
+    - cron: '0 2 * * 0'  # Every Sunday at 2am UTC
+  workflow_dispatch:      # Allow manual trigger
+
+permissions:
+  actions: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete all caches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Listing existing caches..."
+          gh api repos/${{ github.repository }}/actions/caches \
+            --paginate \
+            | jq '.actions_caches[] | "\(.id) \(.key) (\(.size_in_bytes) bytes)"'
+
+          echo "Deleting all caches..."
+          gh api repos/${{ github.repository }}/actions/caches \
+            --paginate \
+            | jq -r '.actions_caches[].id' \
+            | xargs -r -I {} gh api --method DELETE \
+              repos/${{ github.repository }}/actions/caches/{}
+
+          echo "Cache cleanup complete"

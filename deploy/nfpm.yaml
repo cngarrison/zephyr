@@ -1,0 +1,80 @@
+# nfpm package configuration for Zephyr .deb builds.
+#
+# Environment variables (set before invoking nfpm):
+#   NFPM_ARCH     — target Debian architecture: amd64 | arm64
+#   NFPM_VERSION  — version string without the leading v  (e.g. 1.2.3)
+#   BINARY_DIR    — directory containing the compiled zephyr-engine and zephyr-web binaries
+#
+# Example invocation (see .github/workflows/release.yml for the CI equivalent):
+#   NFPM_ARCH=amd64 NFPM_VERSION=1.2.3 BINARY_DIR=dist/deb-amd64 \
+#     nfpm package --config deploy/nfpm.yaml --packager deb --target dist/
+
+name: zephyr
+arch: "${NFPM_ARCH}"
+platform: linux
+version: "${NFPM_VERSION}"
+section: utils
+priority: optional
+
+maintainer: Zephyr Contributors <noreply@github.com>
+description: |
+  Zephyr weather station daemon suite.
+  Self-hosted weather engine and web UI, managed via systemd.
+homepage: https://github.com/your-org/zephyr
+license: MIT
+
+depends:
+  - systemd
+
+contents:
+  # ── Binaries ──────────────────────────────────────────────────────────────
+  - src: "${BINARY_DIR}/zephyr-engine"
+    dst: /usr/local/bin/zephyr-engine
+    file_info:
+      mode: 0755
+
+  - src: "${BINARY_DIR}/zephyr-web"
+    dst: /usr/local/bin/zephyr-web
+    file_info:
+      mode: 0755
+
+  # ── systemd units ─────────────────────────────────────────────────────────
+  - src: deploy/systemd/zephyr-engine.service
+    dst: /lib/systemd/system/zephyr-engine.service
+
+  - src: deploy/systemd/zephyr-web.service
+    dst: /lib/systemd/system/zephyr-web.service
+
+  - src: deploy/systemd/zephyr.target
+    dst: /lib/systemd/system/zephyr.target
+
+  # ── Config directory ──────────────────────────────────────────────────────
+  # The directory itself; postinst sets ownership to root:zephyr / 0750.
+  - dst: /etc/zephyr
+    type: dir
+    file_info:
+      mode: 0755  # postinst tightens this to 0750
+
+  # Example env files — marked noreplace so operator edits survive upgrades.
+  - src: deploy/etc/engine.env.example
+    dst: /etc/zephyr/engine.env.example
+    type: config|noreplace
+    file_info:
+      mode: 0644
+
+  - src: deploy/etc/web.env.example
+    dst: /etc/zephyr/web.env.example
+    type: config|noreplace
+    file_info:
+      mode: 0644
+
+  - src: deploy/etc/app.env.example
+    dst: /etc/zephyr/app.env.example
+    type: config|noreplace
+    file_info:
+      mode: 0644
+
+scripts:
+  postinstall: deploy/scripts/postinst
+  preremove:   deploy/scripts/prerm
+  postremove:  deploy/scripts/postrm

@@ -1,0 +1,63 @@
+[Unit]
+Description=Zephyr Weather Engine
+Documentation=https://github.com/your-org/zephyr
+
+# Wait for a routable network address before starting.
+# This is required when DB_PROVIDER=mysql and the database is on a remote host.
+# If you use SQLite exclusively and want faster boot, you can relax this to
+# After=network.target (and remove the Wants= line).
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+
+# Run as the dedicated zephyr system user (no login shell, no home directory).
+# Create with: useradd -r -s /sbin/nologin -d /var/lib/zephyr -M zephyr
+User=zephyr
+Group=zephyr
+
+# Working directory.  @std/dotenv/load (imported by engine/config.ts) looks for
+# a .env file in the process working directory at startup.  On production there
+# is no .env file here — it silently no-ops.  All config comes from the
+# EnvironmentFile= entries below.
+WorkingDirectory=/var/lib/zephyr
+
+# Environment files are merged in order; later files override earlier ones.
+#
+#   engine.env — daemon config: ENGINE_PORT, ENGINE_HOST, DB_PROVIDER,
+#                 SQLITE_PATH, MYSQL_*, ingest driver settings.
+#   app.env    — station identity: STATION_NAME, STATION_LAT/LON,
+#                 STATION_ALTITUDE_M, STATION_TIMEZONE, STATION_EXTRAS_JSON.
+#                 Shared with zephyr-web so both daemons see the same values.
+#
+# The ‘-’ prefix means systemd will not fail if the file does not yet exist
+# (useful during initial setup before the files have been created).
+EnvironmentFile=-/etc/zephyr/engine.env
+EnvironmentFile=-/etc/zephyr/app.env
+
+ExecStart=/usr/local/bin/zephyr-engine
+
+# Restart on abnormal exit (crash, OOM kill, fatal signal).
+# Does NOT restart on a clean exit (SIGTERM from `systemctl stop`).
+Restart=on-failure
+RestartSec=5s
+
+# Create /run/zephyr/ owned by the zephyr user before the service starts.
+# Available for Unix sockets, PID files, or other ephemeral runtime artifacts.
+# Removed automatically by systemd when the last unit using it stops.
+RuntimeDirectory=zephyr
+RuntimeDirectoryMode=0755
+
+# Stdout and stderr are captured by the systemd journal automatically.
+# View logs with:
+#   journalctl -u zephyr-engine -f          # follow live
+#   journalctl -u zephyr-engine --since today
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=zephyr-engine
+
+[Install]
+# zephyr.target pulls in both daemons; WantedBy here means
+# `systemctl enable zephyr-engine` registers it under that target.
+WantedBy=zephyr.target
