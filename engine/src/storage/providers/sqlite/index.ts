@@ -1,6 +1,7 @@
 import { SqliteAdapter } from "./adapter.ts";
+import { config } from "../../../../config.ts";
 
 export function createAdapter(): SqliteAdapter {
-  const path = Deno.env.get("SQLITE_PATH") ?? "./data/zephyr.db";
+  const path = config.storage.sqlite.path;
   return new SqliteAdapter(path);
 }

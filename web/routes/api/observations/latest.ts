@@ -1,6 +1,7 @@
 import { define } from "../../../utils.ts";
 
-const ENGINE_URL = Deno.env.get("WEB_ENGINE_URL") ?? "http://localhost:8080";
+import { config } from '@/lib/config.ts';
+const ENGINE_URL = config.web.engineUrl;
 
 // Proxy GET /api/observations/latest → engine /api/observations/latest
 // Used by client-side islands (same-origin fetch).

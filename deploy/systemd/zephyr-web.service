@@ -2,7 +2,7 @@
 Description=Zephyr Weather Web UI
 Documentation=https://github.com/cngarrison/zephyr
 
-# The web daemon makes server-side HTTP requests to the engine (WEB_ENGINE_URL)
+# The web daemon makes server-side HTTP requests to the engine (config.web.engine_url)
 # for SSR data fetches, so a working network is required.
 After=network-online.target zephyr-engine.service
 Wants=network-online.target
@@ -22,14 +22,14 @@ Group=zephyr
 
 WorkingDirectory=/var/lib/zephyr
 
-# Environment files are merged in order.
-#
-#   web.env — daemon config: PORT, HOSTNAME, WEB_ENGINE_URL.
-#   app.env — station identity (shared with engine).  The web server reads
-#              STATION_* for SSR pages that don’t proxy to /api/config
-#              (e.g. initial page load before the engine has responded).
-EnvironmentFile=-/etc/zephyr/web.env
-EnvironmentFile=-/etc/zephyr/app.env
+# Tell both daemons where to find the shared TOML config file.
+Environment=ZEPHYR_CONFIG=/etc/zephyr/zephyr.toml
+
+# PORT and HOSTNAME are read directly by the Fresh framework before user code
+# runs, so they must be set here as process environment variables rather than
+# in zephyr.toml.
+Environment=PORT=8081
+Environment=HOSTNAME=0.0.0.0
 
 ExecStart=/usr/local/bin/zephyr-web
 

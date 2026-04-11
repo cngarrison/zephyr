@@ -1,6 +1,7 @@
 import type { FreshContext } from 'fresh';
 
-const ENGINE_URL = Deno.env.get('WEB_ENGINE_URL') ?? 'http://localhost:8080';
+import { config } from '@/lib/config.ts';
+const ENGINE_URL = config.web.engineUrl;
 
 export async function GET(req: Request, _ctx: FreshContext): Promise<Response> {
   const url = new URL(req.url);

@@ -1,0 +1,94 @@
+# zephyr.toml — Zephyr Weather Station configuration
+#
+# Production location : /etc/zephyr/zephyr.toml
+# Permissions         : chmod 640, chown root:zephyr
+#
+# Config file discovery order (first match wins):
+#   1. --config <path>  CLI flag passed to zephyr-engine / zephyr-web
+#   2. $ZEPHYR_CONFIG   environment variable
+#   3. /etc/zephyr/zephyr.toml  (this file's production location)
+#
+# Note: PORT and HOSTNAME for the web daemon are not set here.
+# They are passed as systemd Environment= directives so that the
+# Fresh framework can read them before user code runs.
+
+# ── Engine daemon ────────────────────────────────────────────────────────────
+[engine]
+port = 8080
+host = "0.0.0.0"
+
+# ── Web daemon ───────────────────────────────────────────────────────────────
+[web]
+# URL the web daemon uses to reach the engine for SSR data fetches.
+engine_url = "http://localhost:8080"
+
+# ── Storage ──────────────────────────────────────────────────────────────────
+[storage]
+# Supported providers: "sqlite" (default), "mysql"
+provider = "sqlite"
+
+[storage.sqlite]
+path = "/var/lib/zephyr/zephyr.db"
+
+# Uncomment and fill in to use MySQL instead of SQLite.
+# Remember to set storage.provider = "mysql" above.
+#
+# [storage.mysql]
+# host     = "localhost"
+# port     = 3306
+# user     = "zephyr"
+# password = "changeme"
+# database = "zephyr"
+
+# ── Stations ─────────────────────────────────────────────────────────────────
+# One or more [[stations]] entries.  The first entry is the primary station
+# displayed in the web UI.  Each station needs a stable `id` (used as the
+# database slug — changing it orphans historical data) and a display `name`.
+
+[[stations]]
+id       = "my-station"          # stable slug — do NOT change after first run
+name     = "My Weather Station"  # display name shown in the web UI
+lat      = 51.5074               # decimal degrees, positive = North
+lon      = -0.1278               # decimal degrees, positive = East
+altitude = 10                    # metres above sea level
+timezone = "Europe/London"       # IANA timezone name
+
+# ── Ingest — push (Weather Underground / Ecowitt HTTP push) ──────────────────
+[stations.ingest.push]
+enabled    = true
+debug_dump = false   # write raw ingest params to disk for debugging
+
+# device_ids: map protocol name → device identifier.
+# Leave values empty to accept pushes from any device (single-station default).
+# Set to match the ID/PASSKEY your device sends to restrict ingest to that device.
+[stations.ingest.push.device_ids]
+wu      = ""   # Weather Underground Station ID  (e.g. "KNYNEWYORK42")
+ecowitt = ""   # Ecowitt PASSKEY                (e.g. "ABC123DEF456")
+
+# ── Ingest — poll (GW1000/GW2000 LAN API) ────────────────────────────────────
+[stations.ingest.poll]
+enabled          = false
+gw_host          = "192.168.1.100"
+gw_port          = 45000
+interval_seconds = 60
+
+# ── Additional stations ───────────────────────────────────────────────────────
+# Uncomment and duplicate the block below to add more stations.
+#
+# [[stations]]
+# id       = "remote-station"
+# name     = "Remote Site"
+# lat      = 48.8566
+# lon      = 2.3522
+# altitude = 35
+# timezone = "Europe/Paris"
+#
+# [stations.ingest.push]
+# enabled = true
+# debug_dump = false
+#
+# [stations.ingest.push.device_ids]
+# ecowitt = "REMOTE_PASSKEY_HERE"
+#
+# [stations.ingest.poll]
+# enabled = false

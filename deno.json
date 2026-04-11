@@ -4,9 +4,9 @@
   "tasks": {
     "dev": "deno task --cwd engine dev & deno task --cwd web dev",
     "build": "deno task --cwd web build",
-    "start": "deno task --cwd engine start & deno task --cwd web start",
-    "engine": "deno task --cwd engine dev",
-    "web:dev": "deno task --cwd web dev",
+    "start": "ZEPHYR_CONFIG=../zephyr.toml deno task --cwd engine start & deno task --cwd web start",
+    "engine": "ZEPHYR_CONFIG=../zephyr.toml deno task --cwd engine dev",
+    "web:dev": "ZEPHYR_CONFIG=../zephyr.toml deno task --cwd web dev",
     "web:build": "deno task --cwd web build",
     "web:start": "deno task --cwd web start",
     "web:start:prod": "deno task --cwd web start:prod",

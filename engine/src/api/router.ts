@@ -1,5 +1,5 @@
 import type { StorageAdapter } from "../storage/adapter.ts";
-import { config } from "../../config.ts";
+import { primaryStation } from "../../config.ts";
 import { computeAlmanac } from "../almanac/calculator.ts";
 
 const CORS_HEADERS = {
@@ -22,7 +22,7 @@ export function createApiRouter(storage: StorageAdapter) {
 
       // GET /api/config
       if (url.pathname === "/api/config" && req.method === "GET") {
-        return Response.json({ station: config.station }, { headers: CORS_HEADERS });
+        return Response.json({ station: primaryStation() }, { headers: CORS_HEADERS });
       }
 
       // GET /api/almanac?date=YYYY-MM-DD  (date optional — defaults to today UTC noon)
@@ -38,7 +38,8 @@ export function createApiRouter(storage: StorageAdapter) {
           const now = new Date();
           date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 12, 0, 0));
         }
-        const almanac = computeAlmanac(date, config.station.lat, config.station.lon);
+        const station = primaryStation();
+        const almanac = computeAlmanac(date, station.lat, station.lon);
         return Response.json(almanac, { headers: CORS_HEADERS });
       }
 
@@ -48,7 +49,7 @@ export function createApiRouter(storage: StorageAdapter) {
 
       // GET /api/observations/today?tz=<IANA>  (tz optional — defaults to config.station.timezone)
       if (url.pathname === "/api/observations/today" && req.method === "GET") {
-        const tz = url.searchParams.get("tz") ?? config.station.timezone;
+        const tz = url.searchParams.get("tz") ?? primaryStation().timezone;
         let start: number;
         let end: number;
         try {

@@ -1,4 +1,4 @@
-import { config } from "./config.ts";
+import { config, primaryStation } from "./config.ts";
 import { createStorageAdapter } from "./src/storage/factory.ts";
 import { createIngestHandler } from "./src/ingest/push.ts";
 import { startPoller } from "./src/ingest/poller.ts";
@@ -9,19 +9,21 @@ console.info("Starting Zephyr engine...");
 const storage = await createStorageAdapter();
 await storage.init();
 
-const provider = Deno.env.get("DB_PROVIDER") ?? "sqlite";
-console.info(`Storage: ${provider}`);
+console.info(`Storage: ${config.storage.provider}`);
+
+const station = primaryStation();
+console.info(`Station: ${station.name} (${station.id})`);
 
 const ingestHandler = createIngestHandler(storage);
 const apiRouter = createApiRouter(storage);
 
 Deno.serve({
-  port: config.server.port,
-  hostname: config.server.host,
+  port: config.engine.port,
+  hostname: config.engine.host,
   handler: async (req: Request): Promise<Response> => {
     const url = new URL(req.url);
 
-    if (url.pathname.startsWith("/ingest") && config.ingest.push.enabled) {
+    if (url.pathname.startsWith("/ingest") && station.ingest.push.enabled) {
       return await ingestHandler(req);
     }
     if (url.pathname.startsWith("/api")) {
@@ -34,7 +36,7 @@ Deno.serve({
   },
 });
 
-if (config.ingest.poll.enabled) {
-  startPoller(storage, config.ingest.poll);
-  console.info(`Poller started (interval: ${config.ingest.poll.intervalSeconds}s)`);
+if (station.ingest.poll.enabled) {
+  startPoller(storage, station.ingest.poll);
+  console.info(`Poller started (interval: ${station.ingest.poll.intervalSeconds}s)`);
 }

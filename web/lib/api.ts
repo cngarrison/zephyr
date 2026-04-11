@@ -1,11 +1,11 @@
 import type { AlmanacData, AggregateObservation, DailyAggregate, Observation, StationConfig, TodayStats } from "./types.ts";
+import { config } from "./config.ts";
 
 // Engine base URL — server-side only. Islands use the /api proxy route.
-// Read lazily on each call (not as a module-level constant) so that env vars
-// loaded by @std/dotenv/load in server.ts take effect even with static imports,
-// where the SSR bundle is hoisted and evaluates before dotenv runs.
+// Resolved lazily (function, not module-level const) to ensure the TOML config
+// singleton has been evaluated before this value is read.
 function engineUrl(): string {
-  return Deno.env.get("WEB_ENGINE_URL") ?? "http://localhost:8080";
+  return config.web.engineUrl;
 }
 
 export async function fetchStationConfig(): Promise<StationConfig> {

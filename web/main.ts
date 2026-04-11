@@ -1,4 +1,3 @@
-import '@std/dotenv/load';
 import { App, staticFiles } from 'fresh';
 import type { State } from '@/utils.ts';
 

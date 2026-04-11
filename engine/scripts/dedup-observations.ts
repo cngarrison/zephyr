@@ -30,12 +30,10 @@
 
 import { DatabaseSync } from "node:sqlite";
 import { resolve } from "@std/path";
-import { load as loadDotenv } from "@std/dotenv";
+import { config, primaryStation } from "../config.ts";
 
-await loadDotenv({ export: true }).catch(() => {});
-
-const SQLITE_PATH = resolve(Deno.env.get("SQLITE_PATH") ?? "./data/zephyr.db");
-const STATION_ID  = Deno.env.get("STATION_NAME") ?? "default";
+const SQLITE_PATH = resolve(config.storage.sqlite.path);
+const STATION_ID  = primaryStation().id;
 const DRY_RUN     = Deno.args.includes("--dry-run");
 
 console.log("🧹 Zephyr — observation dedup");

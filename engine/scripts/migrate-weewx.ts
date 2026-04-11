@@ -24,9 +24,10 @@ import { DatabaseSync } from "node:sqlite";
 import { createConnection } from "mysql2/promise";
 import { ensureDir } from "@std/fs";
 import { dirname, resolve } from "@std/path";
-import { load as loadDotenv } from "@std/dotenv";
+import { config, primaryStation } from "../config.ts";
 import { Units } from "../src/domain/units.ts";
 import { runMigrations } from "../src/storage/providers/sqlite/migrate.ts";
+import { load as loadDotenv } from "@std/dotenv";
 
 // ---------------------------------------------------------------------------
 // Environment
@@ -36,6 +37,7 @@ import { runMigrations } from "../src/storage/providers/sqlite/migrate.ts";
 // so this finds engine/.env naturally. Silently ignored if not present.
 await loadDotenv({ export: true }).catch(() => {});
 
+// weewx source credentials are still read from env vars (external DB, not in zephyr.toml).
 function env(name: string, fallback?: string): string {
   const val = Deno.env.get(name) ?? fallback;
   if (val === undefined) {
@@ -50,8 +52,9 @@ const MYSQL_PORT     = Number(env("WEEWX_MYSQL_PORT", "3306"));
 const MYSQL_USER     = env("WEEWX_MYSQL_USER");
 const MYSQL_PASSWORD = env("WEEWX_MYSQL_PASSWORD", "");
 const MYSQL_DATABASE = env("WEEWX_MYSQL_DATABASE");
-const SQLITE_PATH    = resolve(env("SQLITE_PATH", "./data/zephyr.db"));
-const STATION_ID     = env("STATION_NAME", "default");
+// Destination comes from zephyr.toml via the config singleton.
+const SQLITE_PATH    = resolve(config.storage.sqlite.path);
+const STATION_ID     = primaryStation().id;
 
 // ---------------------------------------------------------------------------
 // weewx unit systems
