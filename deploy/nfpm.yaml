@@ -3,11 +3,17 @@
 # Environment variables (set before invoking nfpm):
 #   NFPM_ARCH     — target Debian architecture: amd64 | arm64
 #   NFPM_VERSION  — version string without the leading v  (e.g. 1.2.3)
-#   BINARY_DIR    — directory containing the compiled zephyr-engine and zephyr-web binaries
+#
+# Binaries are expected at a fixed staging path: dist/deb-staging/
+# (avoids relying on env var expansion in nfpm src: glob paths)
 #
 # Example invocation (see .github/workflows/release.yml for the CI equivalent):
-#   NFPM_ARCH=amd64 NFPM_VERSION=1.2.3 BINARY_DIR=dist/deb-amd64 \
+#   NFPM_ARCH=amd64 NFPM_VERSION=1.2.3 \
 #     nfpm package --config deploy/nfpm.yaml --packager deb --target dist/
+#
+# Before invoking, copy the target-arch binaries to dist/deb-staging/:
+#   cp dist/zephyr-engine-linux-amd64 dist/deb-staging/zephyr-engine
+#   cp dist/zephyr-web-linux-amd64    dist/deb-staging/zephyr-web
 
 name: zephyr
 arch: "${NFPM_ARCH}"
@@ -28,12 +34,12 @@ depends:
 
 contents:
   # ── Binaries ──────────────────────────────────────────────────────────────
-  - src: "${BINARY_DIR}/zephyr-engine"
+  - src: dist/deb-staging/zephyr-engine
     dst: /usr/local/bin/zephyr-engine
     file_info:
       mode: 0755
 
-  - src: "${BINARY_DIR}/zephyr-web"
+  - src: dist/deb-staging/zephyr-web
     dst: /usr/local/bin/zephyr-web
     file_info:
       mode: 0755
