@@ -65,7 +65,7 @@ debug_dump = false   # write raw ingest params to disk for debugging
 wu      = ""   # Weather Underground Station ID  (e.g. "KNYNEWYORK42")
 ecowitt = ""   # Ecowitt PASSKEY                (e.g. "ABC123DEF456")
 
-# ── Ingest — poll (GW1000/GW2000 LAN API) ────────────────────────────────────
+# ── Ingest — poll (device local LAN API) ─────────────────────────────────────
 [stations.ingest.poll]
 enabled          = false
 gw_host          = "192.168.1.100"
