@@ -172,16 +172,34 @@ Zephyr uses Tailwind v4 with class-based dark mode.
 
 ## Issue Tracking
 
-Zephyr uses **beads** (`bd` CLI) for issue tracking.
+Zephyr uses **beads** (`bd` CLI) for issue tracking. Issues are stored in the Git repository under `refs/dolt/data` alongside the source code, so they're always in sync with your clone.
+
+**Install beads** if you don't have it:
+
+```bash
+brew install beads   # macOS / Linux via Homebrew
+# or: npm install -g @beads/bd
+```
+
+**First-time setup** (after cloning):
+
+```bash
+bd bootstrap   # pulls the issue database from the remote
+bd list        # verify issues are visible
+```
+
+**Day-to-day commands:**
 
 ```bash
 bd list            # list open issues
 bd show <id>       # view an issue
-bd new             # create a new issue
+bd create "Title" -p 2 -t task   # create a new issue
 bd close <id>      # close an issue
+bd dolt pull       # pull latest issues before starting work
+bd dolt push       # push your changes after creating/closing issues
 ```
 
-If you're picking up an existing issue, mention the ID in your branch name and PR title so it's easy to cross-reference.
+If you're picking up an existing issue, mention the ID in your branch name and PR title so it's easy to cross-reference (e.g. `feat: add Ecowitt v3 support [zephyr-abc]`).
 
 ---
 

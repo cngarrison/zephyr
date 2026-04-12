@@ -177,6 +177,15 @@ bd close <id>            # mark resolved
 
 Issue IDs are short alphanumeric codes (e.g. `zephyr-0pv`). Epics group related issues; see `.beads/` for metadata.
 
+**Sync** — the issue database is stored in the GitHub repo under `refs/dolt/data` (separate from source code refs):
+
+```bash
+bd dolt pull             # fetch latest issues from remote
+bd dolt push             # push local issue changes to remote
+```
+
+New contributors: run `bd bootstrap` after cloning to fetch the issue database automatically.
+
 ---
 
 ## 10. Before Submitting

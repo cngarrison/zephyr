@@ -9,6 +9,7 @@
 
 ```
 [ ] bd close <id1> <id2> ...   (close completed issues)
+[ ] bd dolt push               (sync issue database to remote)
 ```
 
 
@@ -20,7 +21,7 @@
 - **Memory**: Use inbuilt `memory` tool for persistent knowledge across sessions. Do NOT use MEMORY.md files — they fragment across workspaces. Search with `tool_call memory {"input": {"command": "search", "query": <keyword>}}`.
 - Persistence you don't need beats lost context
 - Git workflow: stealth mode (no git ops)
-- Session management: check `bd ready` for available work
+- Session management: run `bd dolt pull` at session start, then check `bd ready` for available work
 
 ## Essential Commands
 
@@ -49,6 +50,12 @@
 
 ### Sync & Collaboration
 - `bd search <query>` - Search issues by keyword
+- `bd dolt pull` - Pull latest issues from remote (GitHub: `refs/dolt/data`)
+- `bd dolt push` - Push local issue changes to remote
+- `bd dolt remote list` - Show configured remotes
+
+> Remote: `git+ssh://git@github.com/cngarrison/zephyr.git`
+> New contributors: run `bd bootstrap` after cloning to fetch the issue database.
 
 ### Project Health
 - `bd stats` - Project statistics (open/closed/blocked counts)

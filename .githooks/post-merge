@@ -1,0 +1,10 @@
+#!/bin/sh
+# Sync beads issue database from remote after pulling source code.
+# Runs automatically after 'git pull' / 'git merge'.
+
+if command -v bd >/dev/null 2>&1; then
+  echo "[beads] Pulling latest issues from remote..."
+  bd dolt pull 2>&1 || echo "[beads] Warning: bd dolt pull failed"
+fi
+
+exit 0
