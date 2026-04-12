@@ -71,9 +71,13 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
       <div class="flex items-center gap-3 px-4 py-2">
 
         {/* ── Logo ────────────────────────────────────────────────────── */}
-        <a href="/" class="shrink-0 flex items-center">
-          <img src="/logo.svg" alt="Zephyr" height="40" class="h-10 w-auto dark:hidden" />
-          <img src="/logo-dark.svg" alt="Zephyr" height="40" class="h-10 w-auto hidden dark:block" />
+        <a href="/" class="shrink-0 flex items-center gap-2.5 mr-4">
+          <img src="/logo-mark.svg" alt="" height="40" class="h-10 w-auto" />
+          {/*
+          <img src="/logo-mark.svg" alt="" height="40" class="h-10 w-auto dark:hidden" />
+          <img src="/logo-mark-dark.svg" alt="" height="40" class="h-10 w-auto hidden dark:block" />
+          */}
+          <span class="text-xl font-bold tracking-tight text-[var(--color-nav-text)]">Zephyr</span>
         </a>
 
         {/* ── Station name + datetime (stacked) ────────────────────────── */}

@@ -34,6 +34,8 @@
   --color-accent: #38bdf8;
 }
 
+@variant dark (&:where(.dark, .dark *));
+
 /* ── Utility classes ──────────────────────────────────────────────────────── */
 .card {
   background-color: var(--color-card);
