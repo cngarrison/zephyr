@@ -1,6 +1,7 @@
 [Unit]
 Description=Zephyr Weather Web UI
 Documentation=https://github.com/cngarrison/zephyr
+PartOf=zephyr.target
 
 # The web daemon makes server-side HTTP requests to the engine (config.web.engine_url)
 # for SSR data fetches, so a working network is required.
