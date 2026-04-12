@@ -55,7 +55,7 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
 
   const formattedDate = dt.toLocaleDateString('en-AU', {
     weekday: 'short',
-    year: 'numeric',
+    //year: 'numeric',
     month: 'short',
     day: 'numeric',
     timeZone: timezone,
@@ -78,7 +78,7 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
           <img src="/logo-mark-dark.svg" alt="" height="40" class="h-10 w-auto hidden dark:block" />
           */
           }
-          <span class='text-xl font-bold tracking-tight text-[var(--color-nav-text)]'>Zephyr</span>
+          <span class='ml-1 text-xl font-bold tracking-tight text-[var(--color-nav-text)]'>Zephyr</span>
         </a>
 
         {/* ── Station name + datetime (stacked) ────────────────────────── */}
@@ -87,15 +87,15 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
           <span class='text-xs opacity-60 leading-tight'>{formattedDate} · {formattedTime}</span>
         </div>
 
-        {/* ── Almanac box (top-right, 2 rows) ──────────────────────────── */}
+        {/* ── Almanac box (top-right, 3 columns) ─────────────────────── */}
         {almanac && (
           <a
             href='/almanac'
-            class='hidden sm:flex flex-col gap-0.5 text-xs px-3 py-1.5 rounded-lg shrink-0 transition-opacity hover:opacity-90'
+            class='hidden sm:flex items-stretch gap-0 text-xs px-3 py-1.5 rounded-lg shrink-0 transition-opacity hover:opacity-90'
             style='background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.1);'
           >
-            {/* Row 1 — sun */}
-            <div class='flex items-center gap-3 opacity-90'>
+            {/* Col 1 — sun times */}
+            <div class='flex flex-col justify-center gap-0.5 opacity-90 pr-3'>
               <span class='flex items-center gap-1'>
                 <i class='wi wi-sunrise' />
                 {fmtTime(almanac.sun.sunrise, timezone)}
@@ -104,10 +104,9 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
                 <i class='wi wi-sunset' />
                 {fmtTime(almanac.sun.sunset, timezone)}
               </span>
-              <span class='opacity-70'>Day {fmtDayLength(almanac.sun.dayLengthSeconds)}</span>
             </div>
-            {/* Row 2 — moon */}
-            <div class='flex items-center gap-3 opacity-90'>
+            {/* Col 2 — moon times */}
+            <div class='flex flex-col justify-center gap-0.5 opacity-90 px-3' style='border-left: 1px solid rgba(255,255,255,0.12);'>
               <span class='flex items-center gap-1'>
                 <i class='wi wi-moonrise' />
                 {almanac.moon.rise ? fmtTime(almanac.moon.rise, timezone) : '—'}
@@ -116,10 +115,22 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
                 <i class='wi wi-moonset' />
                 {almanac.moon.set ? fmtTime(almanac.moon.set, timezone) : '—'}
               </span>
+            </div>
+            {/* Col 3 — day length + moon phase */}
+            <div class='flex flex-col justify-center gap-0.5 opacity-90 pl-3' style='border-left: 1px solid rgba(255,255,255,0.12);'>
+              {/*<span class='flex items-center gap-1 opacity-80'>
+                <i class='wi wi-time-4' />
+                {fmtDayLength(almanac.sun.dayLengthSeconds)}
+              </span>*/}
+              <span class='flex items-center gap-1'>
+                <i class='wi wi-time-4' />
+                Sunshine
+                <span class='opacity-60'>· {fmtDayLength(almanac.sun.dayLengthSeconds)}</span>
+              </span>
               <span class='flex items-center gap-1'>
                 <i class={`wi ${moonIconClass(almanac.moon.phase)}`} />
                 {almanac.moon.phaseName}
-                <span class='opacity-70'>({Math.round(almanac.moon.fraction * 100)}%)</span>
+                <span class='opacity-60'>· {Math.round(almanac.moon.fraction * 100)}%</span>
               </span>
             </div>
           </a>
