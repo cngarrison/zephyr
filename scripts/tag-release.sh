@@ -28,7 +28,7 @@ die()  { echo "error: $*" >&2; exit 1; }
 info() { echo "  $*"; }
 
 current_version() {
-  sed -nE 's/.*VERSION = "([^"]+)".*/\1/p' "$VERSION_FILE" \
+  sed -nE "s/.*VERSION = ['\"]([^'\"]+)['\"].*/\1/p" "$VERSION_FILE" \
     || die "Could not read VERSION from $VERSION_FILE"
 }
 
