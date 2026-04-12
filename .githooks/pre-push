@@ -1,8 +1,34 @@
 #!/bin/sh
+# Pre-push hook: runs format check, lint, and type-check before allowing a push.
+# Exit non-zero to abort the push.
+
+set -e
+
+echo "[pre-push] Running checks before push..."
+
+echo "[pre-push] Checking formatting..."
+if ! deno fmt --check; then
+  echo "[pre-push] ✗ Format check failed. Run 'deno fmt' to fix."
+  exit 1
+fi
+
+echo "[pre-push] Running lint..."
+if ! deno lint; then
+  echo "[pre-push] ✗ Lint failed. Fix the errors above before pushing."
+  exit 1
+fi
+
+echo "[pre-push] Running type checks..."
+if ! deno task check:types:all; then
+  echo "[pre-push] ✗ Type check failed. Fix the errors above before pushing."
+  exit 1
+fi
+
+echo "[pre-push] ✓ All checks passed."
+
 # Sync beads issue database to remote before pushing source code.
 # bd dolt push uses Dolt's own remote protocol (refs/dolt/data) —
 # separate from git refs, so this never interferes with the git push itself.
-
 if command -v bd >/dev/null 2>&1; then
   echo "[beads] Syncing issue database..."
   bd dolt push 2>&1 || echo "[beads] Warning: bd dolt push failed (continuing git push)"
