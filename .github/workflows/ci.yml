@@ -34,9 +34,6 @@ jobs:
           restore-keys: |
             deno-
 
-      - name: Run test suites (engine + web)
-        run: deno task test:all
-
       - name: Type-check engine
         run: deno check engine/main.ts
 
@@ -48,3 +45,6 @@ jobs:
 
       - name: Format check
         run: deno fmt --check
+
+      - name: Run test suites (engine + web)
+        run: deno task test:all

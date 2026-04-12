@@ -16,7 +16,7 @@ export function runAdapterContractTests(
   name: string,
   createAdapter: () => Promise<StorageAdapter>,
   cleanup?: () => Promise<void>,
-): Promise<void> {
+): void {
   // ---------------------------------------------------------------------------
   // 1. insert + latest
   // ---------------------------------------------------------------------------
