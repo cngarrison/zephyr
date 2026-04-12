@@ -19,7 +19,7 @@
     "start": "deno run --allow-net --allow-read --allow-write --allow-env main.ts",
     "dev": "deno run --watch --allow-net --allow-read --allow-write --allow-env main.ts",
     "check:types": "deno check ./main.ts",
-    "test": "deno test --allow-read --allow-write --allow-env tests/",
+    "test": "deno test --allow-read --allow-write --allow-env --allow-net tests/",
     "migrate": "deno run -A scripts/migrate-weewx.ts",
     "dedup": "deno run -A scripts/dedup-observations.ts",
     "format": "deno fmt"

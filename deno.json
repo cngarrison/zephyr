@@ -16,7 +16,9 @@
     "format": "deno task --cwd engine format && deno task --cwd web format",
     "migrate": "deno task --cwd engine migrate",
     "dedup": "deno task --cwd engine dedup",
-    "test": "deno task --cwd engine test",
+    "test:engine": "deno task --cwd engine test",
+    "test:web": "deno task --cwd web test",
+    "test:all": "deno test --allow-read --allow-write --allow-env --allow-net engine/tests/ web/tests/",
 
     "compile:engine": "mkdir -p dist && deno compile --allow-net --allow-env --allow-read=.env --allow-read=./data,/var/lib/zephyr,/etc/zephyr --allow-write=./data,/var/lib/zephyr --output dist/zephyr-engine engine/main.ts",
     "compile:web": "deno task build && mkdir -p dist && cd web && deno compile --allow-net --allow-env --allow-read=.env --include _fresh --include static --output ../dist/zephyr-web _fresh/compiled-entry.js",
