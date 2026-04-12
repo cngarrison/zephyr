@@ -70,6 +70,18 @@ export default function ThemeToggle() {
     }
   }, []);
 
+  // Re-apply when the OS colour scheme changes (only matters in 'system' mode).
+  useEffect(() => {
+    const mq = globalThis.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => {
+      if (theme.value === "system") {
+        applyTheme("system");
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   function toggle() {
     const next = CYCLE[theme.value];
     theme.value = next;
