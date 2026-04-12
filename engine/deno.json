@@ -1,7 +1,7 @@
 {
   "name": "@zephyr/engine",
   "version": "0.1.0",
-  "exports": ".",
+  "exports": "./main.ts",
   "imports": {
     "mysql2": "npm:mysql2",
     "mysql2/promise": "npm:mysql2/promise",

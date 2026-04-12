@@ -1,6 +1,6 @@
 import type { StorageAdapter } from "../storage/adapter.ts";
 import { normalizeEcowitt, normalizeWu } from "./normalizer.ts";
-import { config, primaryStation } from "../../config.ts";
+import { primaryStation } from "../../config.ts";
 
 /** Write raw ingest params to data/ for debugging. Fire-and-forget. */
 async function dumpDebug(protocol: string, params: Record<string, string>): Promise<void> {

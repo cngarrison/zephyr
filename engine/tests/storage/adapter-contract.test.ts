@@ -12,7 +12,7 @@ import { BASE_STATION_ID, BASE_TIMESTAMP, makeObservation, makeSensorReading } f
  * Every StorageAdapter implementation MUST pass all tests here.
  * Adding a new storage provider? Run this suite against it.
  */
-export async function runAdapterContractTests(
+export function runAdapterContractTests(
   name: string,
   createAdapter: () => Promise<StorageAdapter>,
   cleanup?: () => Promise<void>,

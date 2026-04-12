@@ -31,6 +31,7 @@ function makeJsonResponse(body: unknown, status = 200): Response {
  *   Anything else                   → throws Error
  */
 export function mockEngineAPI(opts?: MockEngineAPIOptions): void {
+  // deno-lint-ignore require-await
   globalThis.fetch = async (
     input: RequestInfo | URL,
     _init?: RequestInit,

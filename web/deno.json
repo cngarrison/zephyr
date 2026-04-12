@@ -1,6 +1,6 @@
 {
   "name": "@zephyr/web",
-  "exports": ".",
+  "exports": "./main.ts",
   "tasks": {
     "check": "deno fmt --check . && deno lint . && deno check",
     "dev": "vite",

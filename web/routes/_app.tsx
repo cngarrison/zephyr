@@ -1,3 +1,4 @@
+// deno-lint-ignore-file react-no-danger
 import { define } from "@/utils.ts";
 
 // Runs before any CSS loads — reads localStorage and adds .dark to <html> if needed.

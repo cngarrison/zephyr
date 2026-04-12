@@ -4,7 +4,7 @@
  * Uses preact-render-to-string for SSR snapshot-style assertions.
  * No DOM setup required — pure render-to-string checks.
  */
-import { assertEquals, assertStringIncludes } from '@std/assert';
+import { assertStringIncludes } from '@std/assert';
 import { renderToString } from 'preact-render-to-string';
 import ConditionsGrid from '../../../components/conditions/ConditionsGrid.tsx';
 import { makeObservation, makeTodayStats } from '@zephyr/shared/testing';

@@ -1,6 +1,6 @@
 import { assertAlmostEquals, assertEquals, assertExists } from '@std/assert';
 import { normalizeWu } from '../../src/ingest/normalizer.ts';
-import { BASE_TIMESTAMP, makeWuPayload } from '@zephyr/shared/testing';
+import { makeWuPayload } from '@zephyr/shared/testing';
 
 const TS_TOLERANCE = 2; // seconds
 const STATION = 'test-station';

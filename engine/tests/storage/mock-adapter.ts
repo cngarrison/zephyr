@@ -1,3 +1,4 @@
+// deno-lint-ignore-file require-await
 import type { StorageAdapter } from '../../src/storage/adapter.ts';
 import type {
   AggregateObservation,
@@ -286,7 +287,7 @@ export function createMockAdapter(): MockStorageAdapter {
 
       function statForField<K extends keyof Observation>(
         field: K,
-        tsField?: keyof Observation,
+        _tsField?: keyof Observation,
       ): {
         min: number | null;
         min_time: number | null;

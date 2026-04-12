@@ -74,7 +74,7 @@ Deno.test('timestamp: uses server receive time, not device dateutc', async (t) =
   const payload = makeWuPayload({ dateutc: '2024-06-15 10:30:00' });
   const beforeCall = Math.floor(Date.now() / 1000);
   const { observation } = normalizeWu(payload, TEST_STATION);
-  const afterCall = Math.floor(Date.now() / 1000);
+  const _afterCall = Math.floor(Date.now() / 1000);
 
   await t.step('timestamp is close to now', () => {
     // The observation timestamp must fall within [beforeCall, afterCall + tolerance].

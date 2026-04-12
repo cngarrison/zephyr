@@ -121,6 +121,7 @@ Deno.test('useObservationState', async (t) => {
   await t.step('startObservationPolling: handles failed fetch gracefully', async () => {
     resetSignals();
     // Return HTTP 500 for every request — simulates engine being down
+    // deno-lint-ignore require-await
     globalThis.fetch = async (_input: RequestInfo | URL): Promise<Response> => {
       return new Response('Internal Server Error', { status: 500 });
     };
