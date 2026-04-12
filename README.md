@@ -1,3 +1,17 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.svg">
+    <img src="assets/logo.svg" alt="Zephyr" width="200">
+  </picture>
+</p>
+
+<p align="center">
+  <a href="https://github.com/cngarrison/zephyr/releases"><img src="https://img.shields.io/github/v/release/cngarrison/zephyr?style=flat-square" alt="GitHub Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/cngarrison/zephyr?style=flat-square" alt="License: MIT"></a>
+  <img src="https://img.shields.io/badge/Deno-2.x-black?style=flat-square&logo=deno&logoColor=white" alt="Deno 2.x">
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript strict">
+</p>
+
 # Zephyr Weather
 
 A lightweight, engine-first weather station system built with Deno and TypeScript. Zephyr collects, stores and displays weather data from personal weather stations — designed as a modern, extensible alternative to [weewx](https://weewx.com).
@@ -36,6 +50,22 @@ weewx is a capable system but has accumulated complexity over many years of Pyth
 - Cloud upload adapters (Weather Underground, Ecowitt, CWOP)
 - Static HTML export for HomeAssistant integration
 - Themes / skins
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><img src="assets/screenshots/current.png" alt="Current conditions – light" width="480"><br><sub>Current conditions · Light theme</sub></td>
+    <td align="center"><img src="assets/screenshots/current-dark.png" alt="Current conditions – dark" width="480"><br><sub>Current conditions · Dark theme</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="assets/screenshots/graphs-last24.png" alt="24-hour charts" width="480"><br><sub>24-hour charts</sub></td>
+    <td align="center"><img src="assets/screenshots/history.png" alt="History heatmaps" width="480"><br><sub>History heatmaps &amp; records</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="assets/screenshots/almanac.png" alt="Almanac" width="480"><br><sub>Almanac — sunrise, sunset &amp; moon phase</sub></td>
+  </tr>
+</table>
 
 ## Architecture
 

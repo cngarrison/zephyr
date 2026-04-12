@@ -18,17 +18,17 @@ export default function AggregateChartsGrid({ from, to, bucket }: Props) {
       <ChartCard title='Temperature Range'>
         <TempAggChart from={from} to={to} bucket={bucket} />
       </ChartCard>
-      <ChartCard title='Pressure'>
-        <PressureAggChart from={from} to={to} bucket={bucket} />
-      </ChartCard>
-      <ChartCard title='Humidity'>
-        <HumidityAggChart from={from} to={to} bucket={bucket} />
+      <ChartCard title='Rain Total'>
+        <RainAggChart from={from} to={to} bucket={bucket} />
       </ChartCard>
       <ChartCard title='Wind + Gust'>
         <WindAggChart from={from} to={to} bucket={bucket} />
       </ChartCard>
-      <ChartCard title='Rain Total'>
-        <RainAggChart from={from} to={to} bucket={bucket} />
+      <ChartCard title='Humidity'>
+        <HumidityAggChart from={from} to={to} bucket={bucket} />
+      </ChartCard>
+      <ChartCard title='Pressure'>
+        <PressureAggChart from={from} to={to} bucket={bucket} />
       </ChartCard>
       <ChartCard title='UV Index'>
         <UVAggChart from={from} to={to} bucket={bucket} />
