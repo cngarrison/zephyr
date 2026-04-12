@@ -106,7 +106,10 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
               </span>
             </div>
             {/* Col 2 — moon times */}
-            <div class='flex flex-col justify-center gap-0.5 opacity-90 px-3' style='border-left: 1px solid rgba(255,255,255,0.12);'>
+            <div
+              class='flex flex-col justify-center gap-0.5 opacity-90 px-3'
+              style='border-left: 1px solid rgba(255,255,255,0.12);'
+            >
               <span class='flex items-center gap-1'>
                 <i class='wi wi-moonrise' />
                 {almanac.moon.rise ? fmtTime(almanac.moon.rise, timezone) : '—'}
@@ -117,11 +120,16 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
               </span>
             </div>
             {/* Col 3 — day length + moon phase */}
-            <div class='flex flex-col justify-center gap-0.5 opacity-90 pl-3' style='border-left: 1px solid rgba(255,255,255,0.12);'>
-              {/*<span class='flex items-center gap-1 opacity-80'>
+            <div
+              class='flex flex-col justify-center gap-0.5 opacity-90 pl-3'
+              style='border-left: 1px solid rgba(255,255,255,0.12);'
+            >
+              {
+                /*<span class='flex items-center gap-1 opacity-80'>
                 <i class='wi wi-time-4' />
                 {fmtDayLength(almanac.sun.dayLengthSeconds)}
-              </span>*/}
+              </span>*/
+              }
               <span class='flex items-center gap-1'>
                 <i class='wi wi-time-4' />
                 Sunshine
