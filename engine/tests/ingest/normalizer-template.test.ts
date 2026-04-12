@@ -32,7 +32,7 @@
  *   [ ] readings have correct stationId and server timestamp
  */
 
-import { assertEquals, assertAlmostEquals, assertExists, assertStrictEquals } from '@std/assert';
+import { assertAlmostEquals, assertEquals, assertExists, assertStrictEquals } from '@std/assert';
 import { normalizeWu } from '../../src/ingest/normalizer.ts';
 import { makeWuPayload } from '@zephyr/shared/testing';
 
@@ -84,7 +84,7 @@ Deno.test('timestamp: uses server receive time, not device dateutc', async (t) =
       diff <= TIMESTAMP_TOLERANCE_S,
       true,
       `Expected timestamp within ${TIMESTAMP_TOLERANCE_S}s of now (got diff=${diff}s). ` +
-      'Is the normalizer using Date.now() for the timestamp?',
+        'Is the normalizer using Date.now() for the timestamp?',
     );
   });
 
@@ -437,10 +437,10 @@ Deno.test('empty string fields: produce undefined, not NaN', async (t) => {
 
 Deno.test('rain: piezo fields preferred over standard fields', async (t) => {
   const payload = makeWuPayload({
-    rainratein: '0.100',       // standard: 2.54 mm/hr
-    rrain_piezo: '0.200',     // piezo: 5.08 mm/hr  ← should win
-    dailyrainin: '1.000',     // standard: 25.4 mm
-    drain_piezo: '0.500',     // piezo: 12.7 mm  ← should win
+    rainratein: '0.100', // standard: 2.54 mm/hr
+    rrain_piezo: '0.200', // piezo: 5.08 mm/hr  ← should win
+    dailyrainin: '1.000', // standard: 25.4 mm
+    drain_piezo: '0.500', // piezo: 12.7 mm  ← should win
   });
   const { observation } = normalizeWu(payload, TEST_STATION);
 
@@ -486,9 +486,9 @@ Deno.test('rain: piezo fields preferred over standard fields', async (t) => {
 Deno.test('readings: extended sensors appear in readings array', async (t) => {
   const payload = makeWuPayload({
     soilmoisture1: '42',
-    soiltemp1f: '64.4',   // 18°C exactly: (64.4 - 32) × 5/9 = 18°C
+    soiltemp1f: '64.4', // 18°C exactly: (64.4 - 32) × 5/9 = 18°C
     lightning_num: '3',
-    lightning: '12',      // km
+    lightning: '12', // km
   });
   const { readings } = normalizeWu(payload, TEST_STATION);
 

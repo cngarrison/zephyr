@@ -30,7 +30,7 @@ Deno.test('ThemeToggle — SSR', async (t) => {
     assertStringIncludes(
       html,
       'Switch to light mode',
-      'initial aria-label should reflect the system theme\'s next-action label',
+      "initial aria-label should reflect the system theme's next-action label",
     );
   });
 

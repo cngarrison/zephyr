@@ -4,11 +4,7 @@
  * for all known engine API endpoints.
  */
 import type { Observation, TodayStats } from '@zephyr/shared';
-import {
-  makeAggregateObservation,
-  makeObservation,
-  makeTodayStats,
-} from '@zephyr/shared/testing';
+import { makeAggregateObservation, makeObservation, makeTodayStats } from '@zephyr/shared/testing';
 
 export interface MockEngineAPIOptions {
   observation?: Partial<Observation>;
@@ -39,11 +35,7 @@ export function mockEngineAPI(opts?: MockEngineAPIOptions): void {
     input: RequestInfo | URL,
     _init?: RequestInit,
   ): Promise<Response> => {
-    const urlStr = typeof input === 'string'
-      ? input
-      : input instanceof URL
-      ? input.toString()
-      : (input as Request).url;
+    const urlStr = typeof input === 'string' ? input : input instanceof URL ? input.toString() : (input as Request).url;
 
     // Order matters: check more specific paths before generic prefixes.
     if (urlStr.includes('/api/observations/aggregate')) {

@@ -1,4 +1,4 @@
-import { assertEquals, assertExists, assertAlmostEquals } from '@std/assert';
+import { assertAlmostEquals, assertEquals, assertExists } from '@std/assert';
 import { computeAlmanac } from '../../src/almanac/calculator.ts';
 
 // ---------------------------------------------------------------------------
@@ -66,7 +66,7 @@ Deno.test('computeAlmanac: London summer solstice — sunrise and sunset', async
   await t.step('dusk is after sunset', () => {
     if (result.sun.dusk && result.sun.sunset) {
       const dusk = parseHoursUTC(result.sun.dusk)!;
-      const set  = parseHoursUTC(result.sun.sunset)!;
+      const set = parseHoursUTC(result.sun.sunset)!;
       assertEquals(dusk > set, true, 'dusk should be after sunset');
     }
   });
@@ -141,7 +141,7 @@ Deno.test('computeAlmanac: midnight sun — Tromso 70°N in summer (no sunset)',
 
   await t.step('no NaN in sunrise/sunset strings', () => {
     if (result.sun.sunrise) assertEquals(result.sun.sunrise.includes('NaN'), false);
-    if (result.sun.sunset)  assertEquals(result.sun.sunset.includes('NaN'), false);
+    if (result.sun.sunset) assertEquals(result.sun.sunset.includes('NaN'), false);
   });
 
   await t.step('dayLengthSeconds is finite and non-NaN', () => {
@@ -195,8 +195,11 @@ Deno.test('computeAlmanac: moon phase names for canonical values', async (t) => 
     const result = computeAlmanac(new Date('2024-06-06'), 51.5074, -0.1278);
     // phase should be close to 0 (new moon)
     if (result.moon.phase < 0.1 || result.moon.phase > 0.9) {
-      assertEquals(result.moon.phaseName.toLowerCase().includes('new'), true,
-        `Expected 'New' in phaseName, got: ${result.moon.phaseName}`);
+      assertEquals(
+        result.moon.phaseName.toLowerCase().includes('new'),
+        true,
+        `Expected 'New' in phaseName, got: ${result.moon.phaseName}`,
+      );
     }
   });
 
@@ -204,8 +207,11 @@ Deno.test('computeAlmanac: moon phase names for canonical values', async (t) => 
     const result = computeAlmanac(new Date('2024-06-22'), 51.5074, -0.1278);
     // phase should be close to 0.5 (full moon)
     if (result.moon.phase > 0.4 && result.moon.phase < 0.6) {
-      assertEquals(result.moon.phaseName.toLowerCase().includes('full'), true,
-        `Expected 'Full' in phaseName, got: ${result.moon.phaseName}`);
+      assertEquals(
+        result.moon.phaseName.toLowerCase().includes('full'),
+        true,
+        `Expected 'Full' in phaseName, got: ${result.moon.phaseName}`,
+      );
     }
   });
 });

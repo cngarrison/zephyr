@@ -1,4 +1,4 @@
-import { assertEquals, assertAlmostEquals, assertExists } from '@std/assert';
+import { assertAlmostEquals, assertEquals, assertExists } from '@std/assert';
 import { normalizeEcowitt } from '../../src/ingest/normalizer.ts';
 import { makeEcowittPayload } from '@zephyr/shared/testing';
 

@@ -1,6 +1,6 @@
 import { assertEquals, assertExists, assertNotEquals } from '@std/assert';
 import type { StorageAdapter } from '../../src/storage/adapter.ts';
-import { makeObservation, makeSensorReading, BASE_TIMESTAMP, BASE_STATION_ID } from '@zephyr/shared/testing';
+import { BASE_STATION_ID, BASE_TIMESTAMP, makeObservation, makeSensorReading } from '@zephyr/shared/testing';
 
 /**
  * Provider-agnostic contract tests for StorageAdapter implementations.
@@ -54,10 +54,10 @@ export async function runAdapterContractTests(
     const adapter = await createAdapter();
     try {
       const batch = [
-        makeObservation({ timestamp: BASE_TIMESTAMP,        tempOutdoor: 18.0 }),
-        makeObservation({ timestamp: BASE_TIMESTAMP + 300,  tempOutdoor: 19.0 }),
-        makeObservation({ timestamp: BASE_TIMESTAMP + 600,  tempOutdoor: 20.0 }),
-        makeObservation({ timestamp: BASE_TIMESTAMP + 900,  tempOutdoor: 21.0 }),
+        makeObservation({ timestamp: BASE_TIMESTAMP, tempOutdoor: 18.0 }),
+        makeObservation({ timestamp: BASE_TIMESTAMP + 300, tempOutdoor: 19.0 }),
+        makeObservation({ timestamp: BASE_TIMESTAMP + 600, tempOutdoor: 20.0 }),
+        makeObservation({ timestamp: BASE_TIMESTAMP + 900, tempOutdoor: 21.0 }),
       ];
       await adapter.insertBatch(batch);
 
@@ -77,8 +77,7 @@ export async function runAdapterContractTests(
   Deno.test(`[${name}] query: respects limit`, async () => {
     const adapter = await createAdapter();
     try {
-      const batch = Array.from({ length: 10 }, (_, i) =>
-        makeObservation({ timestamp: BASE_TIMESTAMP + i * 60 }));
+      const batch = Array.from({ length: 10 }, (_, i) => makeObservation({ timestamp: BASE_TIMESTAMP + i * 60 }));
       await adapter.insertBatch(batch);
 
       const result = await adapter.query({ limit: 3 });
@@ -123,7 +122,7 @@ export async function runAdapterContractTests(
       await adapter.insertBatch(batch);
 
       const from = new Date((BASE_TIMESTAMP - 1) * 1000);
-      const to   = new Date((BASE_TIMESTAMP + 3700) * 1000);
+      const to = new Date((BASE_TIMESTAMP + 3700) * 1000);
       const result = await adapter.getObservationsRange(from, to);
       assertEquals(result.length, 2);
       assertEquals(result[0].timestamp, BASE_TIMESTAMP);
@@ -141,12 +140,12 @@ export async function runAdapterContractTests(
     try {
       // Insert two observations an hour apart
       await adapter.insertBatch([
-        makeObservation({ timestamp: BASE_TIMESTAMP,        tempOutdoor: 18.0 }),
+        makeObservation({ timestamp: BASE_TIMESTAMP, tempOutdoor: 18.0 }),
         makeObservation({ timestamp: BASE_TIMESTAMP + 3600, tempOutdoor: 22.0 }),
       ]);
 
       const from = new Date((BASE_TIMESTAMP - 1) * 1000);
-      const to   = new Date((BASE_TIMESTAMP + 7200) * 1000);
+      const to = new Date((BASE_TIMESTAMP + 7200) * 1000);
       const aggs = await adapter.getAggregates(from, to, 'hour');
 
       // Must return at least 1 bucket
@@ -185,7 +184,7 @@ export async function runAdapterContractTests(
     const adapter = await createAdapter();
     try {
       await adapter.insertBatch([
-        makeObservation({ timestamp: BASE_TIMESTAMP,        tempOutdoor: 15.0, humidityOutdoor: 60 }),
+        makeObservation({ timestamp: BASE_TIMESTAMP, tempOutdoor: 15.0, humidityOutdoor: 60 }),
         makeObservation({ timestamp: BASE_TIMESTAMP + 3600, tempOutdoor: 25.0, humidityOutdoor: 40 }),
       ]);
 

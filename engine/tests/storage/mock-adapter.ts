@@ -14,7 +14,7 @@ import type {
 export interface MockCalls {
   insert: Observation[];
   insertBatch: Observation[][];
-  latest: number;            // call count
+  latest: number; // call count
   query: ObservationQuery[];
   insertReadings: SensorReading[][];
   latestReadings: Array<string | undefined>;
@@ -36,23 +36,37 @@ export interface MockStorageAdapter extends StorageAdapter {
 
 function nullStats(): TodayStats {
   return {
-    temp_min: null, temp_min_time: null,
-    temp_max: null, temp_max_time: null,
-    humidity_min: null, humidity_min_time: null,
-    humidity_max: null, humidity_max_time: null,
-    pressure_min: null, pressure_min_time: null,
-    pressure_max: null, pressure_max_time: null,
+    temp_min: null,
+    temp_min_time: null,
+    temp_max: null,
+    temp_max_time: null,
+    humidity_min: null,
+    humidity_min_time: null,
+    humidity_max: null,
+    humidity_max_time: null,
+    pressure_min: null,
+    pressure_min_time: null,
+    pressure_max: null,
+    pressure_max_time: null,
     wind_speed_avg: null,
-    wind_speed_max: null, wind_speed_max_time: null,
+    wind_speed_max: null,
+    wind_speed_max_time: null,
     wind_dir_at_max: null,
-    rain_rate_max: null, rain_rate_max_time: null,
+    rain_rate_max: null,
+    rain_rate_max_time: null,
     rain_today: null,
-    dew_point_min: null, dew_point_min_time: null,
-    dew_point_max: null, dew_point_max_time: null,
-    uv_max: null, uv_max_time: null,
-    solar_max: null, solar_max_time: null,
-    temp_indoor_min: null, temp_indoor_min_time: null,
-    temp_indoor_max: null, temp_indoor_max_time: null,
+    dew_point_min: null,
+    dew_point_min_time: null,
+    dew_point_max: null,
+    dew_point_max_time: null,
+    uv_max: null,
+    uv_max_time: null,
+    solar_max: null,
+    solar_max_time: null,
+    temp_indoor_min: null,
+    temp_indoor_min_time: null,
+    temp_indoor_max: null,
+    temp_indoor_max_time: null,
   };
 }
 
@@ -90,9 +104,15 @@ export function createMockAdapter(): MockStorageAdapter {
   };
 
   const adapter: MockStorageAdapter = {
-    get calls() { return calls; },
-    get observations() { return obs; },
-    get readings() { return rds; },
+    get calls() {
+      return calls;
+    },
+    get observations() {
+      return obs;
+    },
+    get readings() {
+      return rds;
+    },
 
     reset() {
       obs.length = 0;
@@ -104,8 +124,12 @@ export function createMockAdapter(): MockStorageAdapter {
       }
     },
 
-    async init(): Promise<void> { calls.init++; },
-    async close(): Promise<void> { calls.close++; },
+    async init(): Promise<void> {
+      calls.init++;
+    },
+    async close(): Promise<void> {
+      calls.close++;
+    },
 
     async insert(o: Observation): Promise<void> {
       calls.insert.push(o);
@@ -198,12 +222,19 @@ export function createMockAdapter(): MockStorageAdapter {
           temp_c_avg: tmm.avg ?? undefined,
           temp_c_min: tmm.min ?? undefined,
           temp_c_max: tmm.max ?? undefined,
-          humidity_pct_avg: minmax(items.map((o) => o.humidityOutdoor).filter((v): v is number => v !== undefined)).avg ?? undefined,
-          pressure_hpa_avg: minmax(items.map((o) => o.pressureRelative).filter((v): v is number => v !== undefined)).avg ?? undefined,
-          wind_speed_ms_avg: minmax(items.map((o) => o.windSpeed).filter((v): v is number => v !== undefined)).avg ?? undefined,
-          wind_gust_ms_max: minmax(items.map((o) => o.windGust).filter((v): v is number => v !== undefined)).max ?? undefined,
+          humidity_pct_avg: minmax(
+            items.map((o) => o.humidityOutdoor).filter((v): v is number => v !== undefined),
+          ).avg ?? undefined,
+          pressure_hpa_avg: minmax(
+            items.map((o) => o.pressureRelative).filter((v): v is number => v !== undefined),
+          ).avg ?? undefined,
+          wind_speed_ms_avg: minmax(items.map((o) => o.windSpeed).filter((v): v is number => v !== undefined)).avg ??
+            undefined,
+          wind_gust_ms_max: minmax(items.map((o) => o.windGust).filter((v): v is number => v !== undefined)).max ??
+            undefined,
           rain_total_mm: items.reduce((s, o) => s + (o.rainDaily ?? 0), 0),
-          uv_index_avg: minmax(items.map((o) => o.uvIndex).filter((v): v is number => v !== undefined)).avg ?? undefined,
+          uv_index_avg: minmax(items.map((o) => o.uvIndex).filter((v): v is number => v !== undefined)).avg ??
+            undefined,
         });
       }
       return result.sort((a, b) => a.bucket.localeCompare(b.bucket));
@@ -211,9 +242,7 @@ export function createMockAdapter(): MockStorageAdapter {
 
     async getDailyAggregates(year?: number): Promise<DailyAggregate[]> {
       calls.getDailyAggregates.push(year);
-      const filtered = year
-        ? obs.filter((o) => new Date(o.timestamp * 1000).getUTCFullYear() === year)
-        : obs;
+      const filtered = year ? obs.filter((o) => new Date(o.timestamp * 1000).getUTCFullYear() === year) : obs;
 
       const groups = new Map<string, Observation[]>();
       for (const o of filtered) {
@@ -232,12 +261,19 @@ export function createMockAdapter(): MockStorageAdapter {
           temp_c_min: tmm.min ?? undefined,
           temp_c_max: tmm.max ?? undefined,
           temp_c_avg: tmm.avg ?? undefined,
-          humidity_pct_avg: minmax(items.map((o) => o.humidityOutdoor).filter((v): v is number => v !== undefined)).avg ?? undefined,
-          pressure_hpa_avg: minmax(items.map((o) => o.pressureRelative).filter((v): v is number => v !== undefined)).avg ?? undefined,
-          wind_speed_ms_avg: minmax(items.map((o) => o.windSpeed).filter((v): v is number => v !== undefined)).avg ?? undefined,
-          wind_gust_ms_max: minmax(items.map((o) => o.windGust).filter((v): v is number => v !== undefined)).max ?? undefined,
+          humidity_pct_avg: minmax(
+            items.map((o) => o.humidityOutdoor).filter((v): v is number => v !== undefined),
+          ).avg ?? undefined,
+          pressure_hpa_avg: minmax(
+            items.map((o) => o.pressureRelative).filter((v): v is number => v !== undefined),
+          ).avg ?? undefined,
+          wind_speed_ms_avg: minmax(items.map((o) => o.windSpeed).filter((v): v is number => v !== undefined)).avg ??
+            undefined,
+          wind_gust_ms_max: minmax(items.map((o) => o.windGust).filter((v): v is number => v !== undefined)).max ??
+            undefined,
           rain_total_mm: items.length > 0 ? (items[items.length - 1].rainDaily ?? 0) : 0,
-          uv_index_max: minmax(items.map((o) => o.uvIndex).filter((v): v is number => v !== undefined)).max ?? undefined,
+          uv_index_max: minmax(items.map((o) => o.uvIndex).filter((v): v is number => v !== undefined)).max ??
+            undefined,
         });
       }
       return result.sort((a, b) => a.date.localeCompare(b.date));
@@ -251,7 +287,13 @@ export function createMockAdapter(): MockStorageAdapter {
       function statForField<K extends keyof Observation>(
         field: K,
         tsField?: keyof Observation,
-      ): { min: number | null; min_time: number | null; max: number | null; max_time: number | null; avg: number | null } {
+      ): {
+        min: number | null;
+        min_time: number | null;
+        max: number | null;
+        max_time: number | null;
+        avg: number | null;
+      } {
         const vals = items
           .map((o) => ({ v: o[field] as number | undefined, ts: o.timestamp }))
           .filter((x): x is { v: number; ts: number } => typeof x.v === 'number');
@@ -282,28 +324,40 @@ export function createMockAdapter(): MockStorageAdapter {
 
       // Rain today: last rainDaily value in range
       const rainItems = items.filter((o) => o.rainDaily !== undefined);
-      const rainToday = rainItems.length > 0
-        ? (rainItems[rainItems.length - 1].rainDaily ?? null)
-        : null;
+      const rainToday = rainItems.length > 0 ? (rainItems[rainItems.length - 1].rainDaily ?? null) : null;
 
       return {
-        temp_min: temp.min, temp_min_time: temp.min_time,
-        temp_max: temp.max, temp_max_time: temp.max_time,
-        humidity_min: hum.min, humidity_min_time: hum.min_time,
-        humidity_max: hum.max, humidity_max_time: hum.max_time,
-        pressure_min: pres.min, pressure_min_time: pres.min_time,
-        pressure_max: pres.max, pressure_max_time: pres.max_time,
+        temp_min: temp.min,
+        temp_min_time: temp.min_time,
+        temp_max: temp.max,
+        temp_max_time: temp.max_time,
+        humidity_min: hum.min,
+        humidity_min_time: hum.min_time,
+        humidity_max: hum.max,
+        humidity_max_time: hum.max_time,
+        pressure_min: pres.min,
+        pressure_min_time: pres.min_time,
+        pressure_max: pres.max,
+        pressure_max_time: pres.max_time,
         wind_speed_avg: wind.avg,
-        wind_speed_max: gust.max, wind_speed_max_time: gust.max_time,
+        wind_speed_max: gust.max,
+        wind_speed_max_time: gust.max_time,
         wind_dir_at_max: windDirAtMax,
-        rain_rate_max: rainRate.max, rain_rate_max_time: rainRate.max_time,
+        rain_rate_max: rainRate.max,
+        rain_rate_max_time: rainRate.max_time,
         rain_today: rainToday,
-        dew_point_min: dew.min, dew_point_min_time: dew.min_time,
-        dew_point_max: dew.max, dew_point_max_time: dew.max_time,
-        uv_max: uv.max, uv_max_time: uv.max_time,
-        solar_max: solar.max, solar_max_time: solar.max_time,
-        temp_indoor_min: tempIn.min, temp_indoor_min_time: tempIn.min_time,
-        temp_indoor_max: tempIn.max, temp_indoor_max_time: tempIn.max_time,
+        dew_point_min: dew.min,
+        dew_point_min_time: dew.min_time,
+        dew_point_max: dew.max,
+        dew_point_max_time: dew.max_time,
+        uv_max: uv.max,
+        uv_max_time: uv.max_time,
+        solar_max: solar.max,
+        solar_max_time: solar.max_time,
+        temp_indoor_min: tempIn.min,
+        temp_indoor_min_time: tempIn.min_time,
+        temp_indoor_max: tempIn.max,
+        temp_indoor_max_time: tempIn.max_time,
       };
     },
   };

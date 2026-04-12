@@ -77,10 +77,10 @@ Deno.test('ConditionsGrid', async (t) => {
 
   await t.step('degreesToCompass: cardinal directions', () => {
     const cases: Array<[number, string]> = [
-      [0, 'N'],    // 0° → COMPASS_DIRS[0]
-      [90, 'E'],   // 90° → COMPASS_DIRS[4]
-      [180, 'S'],  // 180° → COMPASS_DIRS[8]
-      [270, 'W'],  // 270° → COMPASS_DIRS[12]
+      [0, 'N'], // 0° → COMPASS_DIRS[0]
+      [90, 'E'], // 90° → COMPASS_DIRS[4]
+      [180, 'S'], // 180° → COMPASS_DIRS[8]
+      [270, 'W'], // 270° → COMPASS_DIRS[12]
     ];
     for (const [degrees, expected] of cases) {
       const html = renderToString(

@@ -110,8 +110,10 @@ Deno.test('GET /api/observations/range → 200 with from/to params', async () =>
 
   await withServer(adapter, async (base) => {
     const from = new Date((BASE_TIMESTAMP - 1) * 1000).toISOString();
-    const to   = new Date((BASE_TIMESTAMP + 3700) * 1000).toISOString();
-    const res  = await fetch(`${base}/api/observations/range?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+    const to = new Date((BASE_TIMESTAMP + 3700) * 1000).toISOString();
+    const res = await fetch(
+      `${base}/api/observations/range?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+    );
     assertEquals(res.status, 200);
     const body = await res.json();
     assertEquals(Array.isArray(body), true);
@@ -141,8 +143,8 @@ Deno.test('GET /api/observations/aggregate → 200 with bucket=hour', async () =
 
   await withServer(adapter, async (base) => {
     const from = new Date((BASE_TIMESTAMP - 1) * 1000).toISOString();
-    const to   = new Date((BASE_TIMESTAMP + 7200) * 1000).toISOString();
-    const res  = await fetch(
+    const to = new Date((BASE_TIMESTAMP + 7200) * 1000).toISOString();
+    const res = await fetch(
       `${base}/api/observations/aggregate?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&bucket=hour`,
     );
     assertEquals(res.status, 200);
