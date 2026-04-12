@@ -40,5 +40,5 @@ export const handler = define.handlers<PageData>({
 });
 
 export default define.page(function YearPage({ data }: { data: PageData }) {
-  return <AggregateView {...data} title='Past Year' />;
+  return <AggregateView {...data} title='Past Year' initialTime={data.serverTime} />;
 });

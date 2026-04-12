@@ -40,5 +40,5 @@ export const handler = define.handlers<PageData>({
 });
 
 export default define.page(function MonthPage({ data }: { data: PageData }) {
-  return <AggregateView {...data} title='Past 30 Days' />;
+  return <AggregateView {...data} title='Past 30 Days' initialTime={data.serverTime} />;
 });
