@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Test, type-check, lint & format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Cache Deno dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.deno
+            ~/.cache/deno
+          key: deno-${{ hashFiles('deno.json', 'engine/deno.json', 'web/deno.json') }}
+          restore-keys: |
+            deno-
+
+      - name: Run test suites (engine + web)
+        run: deno task test:all
+
+      - name: Type-check engine
+        run: deno check engine/main.ts
+
+      - name: Type-check web
+        run: deno check web/main.ts
+
+      - name: Lint
+        run: deno lint
+
+      - name: Format check
+        run: deno fmt --check
