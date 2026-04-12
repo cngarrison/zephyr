@@ -1,5 +1,5 @@
-import type { StorageAdapter } from "../storage/adapter.ts";
-import type { IngestPollConfig } from "../../config.ts";
+import type { StorageAdapter } from '../storage/adapter.ts';
+import type { IngestPollConfig } from '../../config.ts';
 
 // LAN API poller — polls a device's local HTTP API at the configured interval.
 // Polls the gateway's local HTTP API at the configured interval.
@@ -19,10 +19,10 @@ export function startPoller(storage: StorageAdapter, config: IngestPollConfig): 
       const data = await resp.json();
       // TODO: parse gateway LAN API JSON response into Observation.
       // The response uses a nested structure; see API documentation for field mapping.
-      console.info("Poller: received livedata (parsing TODO)", data);
+      console.info('Poller: received livedata (parsing TODO)', data);
       void storage;
     } catch (err) {
-      console.error("Poller error:", err instanceof Error ? err.message : err);
+      console.error('Poller error:', err instanceof Error ? err.message : err);
     }
   };
 

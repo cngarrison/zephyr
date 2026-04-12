@@ -1,5 +1,5 @@
-import mysql from "mysql2/promise";
-import { runMigrations } from "./migrate.ts";
+import mysql from 'mysql2/promise';
+import { runMigrations } from './migrate.ts';
 import type {
   AggregateObservation,
   DailyAggregate,
@@ -7,8 +7,8 @@ import type {
   SensorReading,
   StorageAdapter,
   TodayStats,
-} from "../../adapter.ts";
-import type { Observation } from "../../../domain/observation.ts";
+} from '../../adapter.ts';
+import type { Observation } from '../../../domain/observation.ts';
 
 export interface MysqlConfig {
   host: string;
@@ -77,15 +77,28 @@ export class MysqlAdapter implements StorageAdapter {
         uv_index        = VALUES(uv_index),
         vpd             = VALUES(vpd)`,
       [
-        obs.timestamp, obs.stationId,
-        obs.tempIndoor ?? null, obs.tempOutdoor ?? null,
-        obs.tempDewpoint ?? null, obs.tempFeelsLike ?? null,
-        obs.humidityIndoor ?? null, obs.humidityOutdoor ?? null,
-        obs.pressureAbsolute ?? null, obs.pressureRelative ?? null,
-        obs.windSpeed ?? null, obs.windGust ?? null, obs.windDirection ?? null,
-        obs.rainRate ?? null, obs.rainDaily ?? null, obs.rainWeekly ?? null,
-        obs.rainMonthly ?? null, obs.rainYearly ?? null, obs.rainEvent ?? null,
-        obs.solarRadiation ?? null, obs.uvIndex ?? null, obs.vpd ?? null,
+        obs.timestamp,
+        obs.stationId,
+        obs.tempIndoor ?? null,
+        obs.tempOutdoor ?? null,
+        obs.tempDewpoint ?? null,
+        obs.tempFeelsLike ?? null,
+        obs.humidityIndoor ?? null,
+        obs.humidityOutdoor ?? null,
+        obs.pressureAbsolute ?? null,
+        obs.pressureRelative ?? null,
+        obs.windSpeed ?? null,
+        obs.windGust ?? null,
+        obs.windDirection ?? null,
+        obs.rainRate ?? null,
+        obs.rainDaily ?? null,
+        obs.rainWeekly ?? null,
+        obs.rainMonthly ?? null,
+        obs.rainYearly ?? null,
+        obs.rainEvent ?? null,
+        obs.solarRadiation ?? null,
+        obs.uvIndex ?? null,
+        obs.vpd ?? null,
       ],
     );
   }
@@ -128,15 +141,28 @@ export class MysqlAdapter implements StorageAdapter {
             uv_index        = VALUES(uv_index),
             vpd             = VALUES(vpd)`,
           [
-            o.timestamp, o.stationId,
-            o.tempIndoor ?? null, o.tempOutdoor ?? null,
-            o.tempDewpoint ?? null, o.tempFeelsLike ?? null,
-            o.humidityIndoor ?? null, o.humidityOutdoor ?? null,
-            o.pressureAbsolute ?? null, o.pressureRelative ?? null,
-            o.windSpeed ?? null, o.windGust ?? null, o.windDirection ?? null,
-            o.rainRate ?? null, o.rainDaily ?? null, o.rainWeekly ?? null,
-            o.rainMonthly ?? null, o.rainYearly ?? null, o.rainEvent ?? null,
-            o.solarRadiation ?? null, o.uvIndex ?? null, o.vpd ?? null,
+            o.timestamp,
+            o.stationId,
+            o.tempIndoor ?? null,
+            o.tempOutdoor ?? null,
+            o.tempDewpoint ?? null,
+            o.tempFeelsLike ?? null,
+            o.humidityIndoor ?? null,
+            o.humidityOutdoor ?? null,
+            o.pressureAbsolute ?? null,
+            o.pressureRelative ?? null,
+            o.windSpeed ?? null,
+            o.windGust ?? null,
+            o.windDirection ?? null,
+            o.rainRate ?? null,
+            o.rainDaily ?? null,
+            o.rainWeekly ?? null,
+            o.rainMonthly ?? null,
+            o.rainYearly ?? null,
+            o.rainEvent ?? null,
+            o.solarRadiation ?? null,
+            o.uvIndex ?? null,
+            o.vpd ?? null,
           ],
         );
       }
@@ -151,7 +177,7 @@ export class MysqlAdapter implements StorageAdapter {
 
   async latest(): Promise<Observation | null> {
     const [rows] = await this.#pool!.execute(
-      "SELECT * FROM observations ORDER BY timestamp DESC LIMIT 1",
+      'SELECT * FROM observations ORDER BY timestamp DESC LIMIT 1',
     );
     const r = (rows as Record<string, unknown>[])[0];
     return r ? rowToObservation(r) : null;
@@ -160,11 +186,17 @@ export class MysqlAdapter implements StorageAdapter {
   async query(q: ObservationQuery): Promise<Observation[]> {
     const conditions: string[] = [];
     const params: unknown[] = [];
-    if (q.from !== undefined) { conditions.push("timestamp >= ?"); params.push(q.from); }
-    if (q.to !== undefined) { conditions.push("timestamp <= ?"); params.push(q.to); }
-    const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
-    const limit = q.limit !== undefined ? `LIMIT ${q.limit}` : "";
-    const offset = q.offset !== undefined ? `OFFSET ${q.offset}` : "";
+    if (q.from !== undefined) {
+      conditions.push('timestamp >= ?');
+      params.push(q.from);
+    }
+    if (q.to !== undefined) {
+      conditions.push('timestamp <= ?');
+      params.push(q.to);
+    }
+    const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const limit = q.limit !== undefined ? `LIMIT ${q.limit}` : '';
+    const offset = q.offset !== undefined ? `OFFSET ${q.offset}` : '';
     const [rows] = await this.#pool!.execute(
       `SELECT * FROM observations ${where} ORDER BY timestamp ASC ${limit} ${offset}`,
       params,
@@ -198,8 +230,8 @@ export class MysqlAdapter implements StorageAdapter {
   }
 
   async latestReadings(stationId?: string): Promise<SensorReading[]> {
-    const stationFilter = stationId ? "WHERE station_id = ?" : "";
-    const joinFilter = stationId ? "WHERE r.station_id = ?" : "";
+    const stationFilter = stationId ? 'WHERE station_id = ?' : '';
+    const joinFilter = stationId ? 'WHERE r.station_id = ?' : '';
     const params: unknown[] = stationId ? [stationId, stationId] : [];
     const [rows] = await this.#pool!.execute(
       `SELECT r.* FROM readings r
@@ -216,13 +248,19 @@ export class MysqlAdapter implements StorageAdapter {
   }
 
   async queryReadings(sensorId: string, q: ObservationQuery): Promise<SensorReading[]> {
-    const conditions = ["sensor_id = ?"];
+    const conditions = ['sensor_id = ?'];
     const params: unknown[] = [sensorId];
-    if (q.from !== undefined) { conditions.push("timestamp >= ?"); params.push(q.from); }
-    if (q.to !== undefined) { conditions.push("timestamp <= ?"); params.push(q.to); }
-    const where = `WHERE ${conditions.join(" AND ")}`;
-    const limit = q.limit !== undefined ? `LIMIT ${q.limit}` : "";
-    const offset = q.offset !== undefined ? `OFFSET ${q.offset}` : "";
+    if (q.from !== undefined) {
+      conditions.push('timestamp >= ?');
+      params.push(q.from);
+    }
+    if (q.to !== undefined) {
+      conditions.push('timestamp <= ?');
+      params.push(q.to);
+    }
+    const where = `WHERE ${conditions.join(' AND ')}`;
+    const limit = q.limit !== undefined ? `LIMIT ${q.limit}` : '';
+    const offset = q.offset !== undefined ? `OFFSET ${q.offset}` : '';
     const [rows] = await this.#pool!.execute(
       `SELECT * FROM readings ${where} ORDER BY timestamp ASC ${limit} ${offset}`,
       params,
@@ -258,16 +296,16 @@ export class MysqlAdapter implements StorageAdapter {
     );
     return (rows as Record<string, unknown>[]).map((r) => ({
       bucket: r.bucket as string,
-      temp_c_avg:        r.temp_c_avg        != null ? r.temp_c_avg        as number : undefined,
-      temp_c_min:        r.temp_c_min        != null ? r.temp_c_min        as number : undefined,
-      temp_c_max:        r.temp_c_max        != null ? r.temp_c_max        as number : undefined,
-      dew_point_c_avg:   r.dew_point_c_avg   != null ? r.dew_point_c_avg   as number : undefined,
-      humidity_pct_avg:  r.humidity_pct_avg  != null ? r.humidity_pct_avg  as number : undefined,
-      pressure_hpa_avg:  r.pressure_hpa_avg  != null ? r.pressure_hpa_avg  as number : undefined,
+      temp_c_avg: r.temp_c_avg != null ? r.temp_c_avg as number : undefined,
+      temp_c_min: r.temp_c_min != null ? r.temp_c_min as number : undefined,
+      temp_c_max: r.temp_c_max != null ? r.temp_c_max as number : undefined,
+      dew_point_c_avg: r.dew_point_c_avg != null ? r.dew_point_c_avg as number : undefined,
+      humidity_pct_avg: r.humidity_pct_avg != null ? r.humidity_pct_avg as number : undefined,
+      pressure_hpa_avg: r.pressure_hpa_avg != null ? r.pressure_hpa_avg as number : undefined,
       wind_speed_ms_avg: r.wind_speed_ms_avg != null ? r.wind_speed_ms_avg as number : undefined,
-      wind_gust_ms_max:  r.wind_gust_ms_max  != null ? r.wind_gust_ms_max  as number : undefined,
-      rain_total_mm:     r.rain_total_mm     != null ? r.rain_total_mm     as number : undefined,
-      uv_index_avg:      r.uv_index_avg      != null ? r.uv_index_avg      as number : undefined,
+      wind_gust_ms_max: r.wind_gust_ms_max != null ? r.wind_gust_ms_max as number : undefined,
+      rain_total_mm: r.rain_total_mm != null ? r.rain_total_mm as number : undefined,
+      uv_index_avg: r.uv_index_avg != null ? r.uv_index_avg as number : undefined,
       solar_rad_wm2_avg: r.solar_rad_wm2_avg != null ? r.solar_rad_wm2_avg as number : undefined,
     }));
   }
@@ -276,7 +314,7 @@ export class MysqlAdapter implements StorageAdapter {
     const fromEpoch = Math.floor(from.getTime() / 1000);
     const toEpoch = Math.floor(to.getTime() / 1000);
     const [rows] = await this.#pool!.execute(
-      "SELECT * FROM observations WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp ASC",
+      'SELECT * FROM observations WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp ASC',
       [fromEpoch, toEpoch],
     );
     return (rows as Record<string, unknown>[]).map(rowToObservation);
@@ -287,10 +325,10 @@ export class MysqlAdapter implements StorageAdapter {
     let toEpoch: number;
     if (year !== undefined) {
       fromEpoch = Math.floor(new Date(`${year}-01-01T00:00:00Z`).getTime() / 1000);
-      toEpoch   = Math.floor(new Date(`${year + 1}-01-01T00:00:00Z`).getTime() / 1000);
+      toEpoch = Math.floor(new Date(`${year + 1}-01-01T00:00:00Z`).getTime() / 1000);
     } else {
       fromEpoch = 0;
-      toEpoch   = Math.floor(Date.now() / 1000) + 86400;
+      toEpoch = Math.floor(Date.now() / 1000) + 86400;
     }
     const [rows] = await this.#pool!.execute(
       `SELECT
@@ -322,25 +360,25 @@ export class MysqlAdapter implements StorageAdapter {
       [fromEpoch, toEpoch],
     );
     return (rows as Record<string, unknown>[]).map((r): DailyAggregate => ({
-      date:              r.date              as string,
-      temp_c_min:        r.temp_c_min        != null ? r.temp_c_min        as number : undefined,
-      temp_c_max:        r.temp_c_max        != null ? r.temp_c_max        as number : undefined,
-      temp_c_avg:        r.temp_c_avg        != null ? r.temp_c_avg        as number : undefined,
-      dew_point_c_min:   r.dew_point_c_min   != null ? r.dew_point_c_min   as number : undefined,
-      dew_point_c_max:   r.dew_point_c_max   != null ? r.dew_point_c_max   as number : undefined,
-      dew_point_c_avg:   r.dew_point_c_avg   != null ? r.dew_point_c_avg   as number : undefined,
-      humidity_pct_min:  r.humidity_pct_min  != null ? r.humidity_pct_min  as number : undefined,
-      humidity_pct_max:  r.humidity_pct_max  != null ? r.humidity_pct_max  as number : undefined,
-      humidity_pct_avg:  r.humidity_pct_avg  != null ? r.humidity_pct_avg  as number : undefined,
-      pressure_hpa_min:  r.pressure_hpa_min  != null ? r.pressure_hpa_min  as number : undefined,
-      pressure_hpa_max:  r.pressure_hpa_max  != null ? r.pressure_hpa_max  as number : undefined,
-      pressure_hpa_avg:  r.pressure_hpa_avg  != null ? r.pressure_hpa_avg  as number : undefined,
+      date: r.date as string,
+      temp_c_min: r.temp_c_min != null ? r.temp_c_min as number : undefined,
+      temp_c_max: r.temp_c_max != null ? r.temp_c_max as number : undefined,
+      temp_c_avg: r.temp_c_avg != null ? r.temp_c_avg as number : undefined,
+      dew_point_c_min: r.dew_point_c_min != null ? r.dew_point_c_min as number : undefined,
+      dew_point_c_max: r.dew_point_c_max != null ? r.dew_point_c_max as number : undefined,
+      dew_point_c_avg: r.dew_point_c_avg != null ? r.dew_point_c_avg as number : undefined,
+      humidity_pct_min: r.humidity_pct_min != null ? r.humidity_pct_min as number : undefined,
+      humidity_pct_max: r.humidity_pct_max != null ? r.humidity_pct_max as number : undefined,
+      humidity_pct_avg: r.humidity_pct_avg != null ? r.humidity_pct_avg as number : undefined,
+      pressure_hpa_min: r.pressure_hpa_min != null ? r.pressure_hpa_min as number : undefined,
+      pressure_hpa_max: r.pressure_hpa_max != null ? r.pressure_hpa_max as number : undefined,
+      pressure_hpa_avg: r.pressure_hpa_avg != null ? r.pressure_hpa_avg as number : undefined,
       wind_speed_ms_max: r.wind_speed_ms_max != null ? r.wind_speed_ms_max as number : undefined,
       wind_speed_ms_avg: r.wind_speed_ms_avg != null ? r.wind_speed_ms_avg as number : undefined,
-      wind_gust_ms_max:  r.wind_gust_ms_max  != null ? r.wind_gust_ms_max  as number : undefined,
-      rain_total_mm:     r.rain_total_mm     != null ? r.rain_total_mm     as number : undefined,
-      uv_index_max:      r.uv_index_max      != null ? r.uv_index_max      as number : undefined,
-      uv_index_avg:      r.uv_index_avg      != null ? r.uv_index_avg      as number : undefined,
+      wind_gust_ms_max: r.wind_gust_ms_max != null ? r.wind_gust_ms_max as number : undefined,
+      rain_total_mm: r.rain_total_mm != null ? r.rain_total_mm as number : undefined,
+      uv_index_max: r.uv_index_max != null ? r.uv_index_max as number : undefined,
+      uv_index_avg: r.uv_index_avg != null ? r.uv_index_avg as number : undefined,
       solar_rad_wm2_max: r.solar_rad_wm2_max != null ? r.solar_rad_wm2_max as number : undefined,
       solar_rad_wm2_avg: r.solar_rad_wm2_avg != null ? r.solar_rad_wm2_avg as number : undefined,
     }));
@@ -387,54 +425,76 @@ export class MysqlAdapter implements StorageAdapter {
       [from, to],
     );
 
-    const n = (v: unknown): number | null =>
-      v !== null && v !== undefined ? v as number : null;
+    const n = (v: unknown): number | null => v !== null && v !== undefined ? v as number : null;
 
     const row = (rows as Record<string, unknown>[])[0];
     if (!row) {
       return {
-        temp_min: null, temp_min_time: null, temp_max: null, temp_max_time: null,
-        humidity_min: null, humidity_min_time: null, humidity_max: null, humidity_max_time: null,
-        pressure_min: null, pressure_min_time: null, pressure_max: null, pressure_max_time: null,
-        wind_speed_avg: null, wind_speed_max: null, wind_speed_max_time: null, wind_dir_at_max: null,
-        rain_rate_max: null, rain_rate_max_time: null, rain_today: null,
-        dew_point_min: null, dew_point_min_time: null, dew_point_max: null, dew_point_max_time: null,
-        uv_max: null, uv_max_time: null, solar_max: null, solar_max_time: null,
-        temp_indoor_min: null, temp_indoor_min_time: null, temp_indoor_max: null, temp_indoor_max_time: null,
+        temp_min: null,
+        temp_min_time: null,
+        temp_max: null,
+        temp_max_time: null,
+        humidity_min: null,
+        humidity_min_time: null,
+        humidity_max: null,
+        humidity_max_time: null,
+        pressure_min: null,
+        pressure_min_time: null,
+        pressure_max: null,
+        pressure_max_time: null,
+        wind_speed_avg: null,
+        wind_speed_max: null,
+        wind_speed_max_time: null,
+        wind_dir_at_max: null,
+        rain_rate_max: null,
+        rain_rate_max_time: null,
+        rain_today: null,
+        dew_point_min: null,
+        dew_point_min_time: null,
+        dew_point_max: null,
+        dew_point_max_time: null,
+        uv_max: null,
+        uv_max_time: null,
+        solar_max: null,
+        solar_max_time: null,
+        temp_indoor_min: null,
+        temp_indoor_min_time: null,
+        temp_indoor_max: null,
+        temp_indoor_max_time: null,
       };
     }
 
     return {
-      temp_min:             n(row.temp_min),
-      temp_min_time:        n(row.temp_min_time),
-      temp_max:             n(row.temp_max),
-      temp_max_time:        n(row.temp_max_time),
-      humidity_min:         n(row.humidity_min),
-      humidity_min_time:    n(row.humidity_min_time),
-      humidity_max:         n(row.humidity_max),
-      humidity_max_time:    n(row.humidity_max_time),
-      pressure_min:         n(row.pressure_min),
-      pressure_min_time:    n(row.pressure_min_time),
-      pressure_max:         n(row.pressure_max),
-      pressure_max_time:    n(row.pressure_max_time),
-      wind_speed_avg:       n(row.wind_speed_avg),
-      wind_speed_max:       n(row.wind_speed_max),
-      wind_speed_max_time:  n(row.wind_speed_max_time),
-      wind_dir_at_max:      n(row.wind_dir_at_max),
-      rain_rate_max:        n(row.rain_rate_max),
-      rain_rate_max_time:   n(row.rain_rate_max_time),
-      rain_today:           n(row.rain_today),
-      dew_point_min:        n(row.dew_point_min),
-      dew_point_min_time:   n(row.dew_point_min_time),
-      dew_point_max:        n(row.dew_point_max),
-      dew_point_max_time:   n(row.dew_point_max_time),
-      uv_max:               n(row.uv_max),
-      uv_max_time:          n(row.uv_max_time),
-      solar_max:            n(row.solar_max),
-      solar_max_time:       n(row.solar_max_time),
-      temp_indoor_min:      n(row.temp_indoor_min),
+      temp_min: n(row.temp_min),
+      temp_min_time: n(row.temp_min_time),
+      temp_max: n(row.temp_max),
+      temp_max_time: n(row.temp_max_time),
+      humidity_min: n(row.humidity_min),
+      humidity_min_time: n(row.humidity_min_time),
+      humidity_max: n(row.humidity_max),
+      humidity_max_time: n(row.humidity_max_time),
+      pressure_min: n(row.pressure_min),
+      pressure_min_time: n(row.pressure_min_time),
+      pressure_max: n(row.pressure_max),
+      pressure_max_time: n(row.pressure_max_time),
+      wind_speed_avg: n(row.wind_speed_avg),
+      wind_speed_max: n(row.wind_speed_max),
+      wind_speed_max_time: n(row.wind_speed_max_time),
+      wind_dir_at_max: n(row.wind_dir_at_max),
+      rain_rate_max: n(row.rain_rate_max),
+      rain_rate_max_time: n(row.rain_rate_max_time),
+      rain_today: n(row.rain_today),
+      dew_point_min: n(row.dew_point_min),
+      dew_point_min_time: n(row.dew_point_min_time),
+      dew_point_max: n(row.dew_point_max),
+      dew_point_max_time: n(row.dew_point_max_time),
+      uv_max: n(row.uv_max),
+      uv_max_time: n(row.uv_max_time),
+      solar_max: n(row.solar_max),
+      solar_max_time: n(row.solar_max_time),
+      temp_indoor_min: n(row.temp_indoor_min),
       temp_indoor_min_time: n(row.temp_indoor_min_time),
-      temp_indoor_max:      n(row.temp_indoor_max),
+      temp_indoor_max: n(row.temp_indoor_max),
       temp_indoor_max_time: n(row.temp_indoor_max_time),
     };
   }
@@ -447,28 +507,28 @@ export class MysqlAdapter implements StorageAdapter {
 
 function rowToObservation(row: Record<string, unknown>): Observation {
   return {
-    timestamp:        row.timestamp as number,
-    stationId:        row.station_id as string,
-    tempIndoor:       (row.temp_indoor       ?? undefined) as number | undefined,
-    tempOutdoor:      (row.temp_outdoor      ?? undefined) as number | undefined,
-    tempDewpoint:     (row.temp_dewpoint     ?? undefined) as number | undefined,
-    tempFeelsLike:    (row.temp_feels_like   ?? undefined) as number | undefined,
-    humidityIndoor:   (row.humidity_indoor   ?? undefined) as number | undefined,
-    humidityOutdoor:  (row.humidity_outdoor  ?? undefined) as number | undefined,
-    pressureAbsolute: (row.pressure_abs      ?? undefined) as number | undefined,
-    pressureRelative: (row.pressure_rel      ?? undefined) as number | undefined,
-    windSpeed:        (row.wind_speed        ?? undefined) as number | undefined,
-    windGust:         (row.wind_gust         ?? undefined) as number | undefined,
-    windDirection:    (row.wind_direction    ?? undefined) as number | undefined,
-    rainRate:         (row.rain_rate         ?? undefined) as number | undefined,
-    rainDaily:        (row.rain_daily        ?? undefined) as number | undefined,
-    rainWeekly:       (row.rain_weekly       ?? undefined) as number | undefined,
-    rainMonthly:      (row.rain_monthly      ?? undefined) as number | undefined,
-    rainYearly:       (row.rain_yearly       ?? undefined) as number | undefined,
-    rainEvent:        (row.rain_event        ?? undefined) as number | undefined,
-    solarRadiation:   (row.solar_radiation   ?? undefined) as number | undefined,
-    uvIndex:          (row.uv_index          ?? undefined) as number | undefined,
-    vpd:              (row.vpd               ?? undefined) as number | undefined,
+    timestamp: row.timestamp as number,
+    stationId: row.station_id as string,
+    tempIndoor: (row.temp_indoor ?? undefined) as number | undefined,
+    tempOutdoor: (row.temp_outdoor ?? undefined) as number | undefined,
+    tempDewpoint: (row.temp_dewpoint ?? undefined) as number | undefined,
+    tempFeelsLike: (row.temp_feels_like ?? undefined) as number | undefined,
+    humidityIndoor: (row.humidity_indoor ?? undefined) as number | undefined,
+    humidityOutdoor: (row.humidity_outdoor ?? undefined) as number | undefined,
+    pressureAbsolute: (row.pressure_abs ?? undefined) as number | undefined,
+    pressureRelative: (row.pressure_rel ?? undefined) as number | undefined,
+    windSpeed: (row.wind_speed ?? undefined) as number | undefined,
+    windGust: (row.wind_gust ?? undefined) as number | undefined,
+    windDirection: (row.wind_direction ?? undefined) as number | undefined,
+    rainRate: (row.rain_rate ?? undefined) as number | undefined,
+    rainDaily: (row.rain_daily ?? undefined) as number | undefined,
+    rainWeekly: (row.rain_weekly ?? undefined) as number | undefined,
+    rainMonthly: (row.rain_monthly ?? undefined) as number | undefined,
+    rainYearly: (row.rain_yearly ?? undefined) as number | undefined,
+    rainEvent: (row.rain_event ?? undefined) as number | undefined,
+    solarRadiation: (row.solar_radiation ?? undefined) as number | undefined,
+    uvIndex: (row.uv_index ?? undefined) as number | undefined,
+    vpd: (row.vpd ?? undefined) as number | undefined,
   };
 }
 
@@ -476,7 +536,7 @@ function rowToReading(row: Record<string, unknown>): SensorReading {
   return {
     timestamp: row.timestamp as number,
     stationId: row.station_id as string,
-    sensorId:  row.sensor_id as string,
-    value:     row.value as number,
+    sensorId: row.sensor_id as string,
+    value: row.value as number,
   };
 }

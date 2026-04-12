@@ -12,9 +12,8 @@
 [ ] bd dolt push               (sync issue database to remote)
 ```
 
-
-
 ## Core Rules
+
 - **Default**: Use beads for ALL task tracking (`bd create`, `bd ready`, `bd close`)
 - **Prohibited**: Do NOT use TodoWrite, TaskCreate, or markdown files for task tracking
 - **Workflow**: Create beads issue BEFORE writing code, mark in_progress when starting
@@ -26,12 +25,14 @@
 ## Essential Commands
 
 ### Finding Work
+
 - `bd ready` - Show issues ready to work (no blockers)
 - `bd list --status=open` - All open issues
 - `bd list --status=in_progress` - Your active work
 - `bd show <id>` - Detailed issue view with dependencies
 
 ### Creating & Updating
+
 - `bd create --title="Summary of this issue" --description="Why this issue exists and what needs to be done" --type=task|bug|feature --priority=2` - New issue
   - Priority: 0-4 or P0-P4 (0=critical, 2=medium, 4=backlog). NOT "high"/"medium"/"low"
 - `bd update <id> --claim` - Claim work
@@ -44,11 +45,13 @@
 - **WARNING**: Do NOT use `bd edit` - it opens $EDITOR (vim/nano) which blocks agents
 
 ### Dependencies & Blocking
+
 - `bd dep add <issue> <depends-on>` - Add dependency (issue depends on depends-on)
 - `bd blocked` - Show all blocked issues
 - `bd show <id>` - See what's blocking/blocked by this issue
 
 ### Sync & Collaboration
+
 - `bd search <query>` - Search issues by keyword
 - `bd dolt pull` - Pull latest issues from remote (GitHub: `refs/dolt/data`)
 - `bd dolt push` - Push local issue changes to remote
@@ -58,11 +61,13 @@
 > New contributors: run `bd bootstrap` after cloning to fetch the issue database.
 
 ### Project Health
+
 - `bd stats` - Project statistics (open/closed/blocked counts)
 - `bd doctor` - Check for issues (sync problems, missing hooks)
 - `bd doctor --check=conventions` - Check for convention drift (lint, stale, orphans)
 
 ### Quality Tools
+
 - `bd create --validate` - Check description has required sections
 - `bd create --acceptance="criteria"` - Set acceptance criteria (checked by --validate)
 - `bd create --design="decisions"` - Record design decisions
@@ -71,6 +76,7 @@
 - `bd lint` - Check existing issues for missing sections
 
 ### Lifecycle & Hygiene
+
 - `bd defer <id> --until="date"` - Defer work to a future date
 - `bd supersede <id> --with=<new-id>` - Mark issue as superseded
 - `bd close <id> --suggest-next` - Show newly unblocked issues after closing
@@ -80,12 +86,14 @@
 - `bd human <id>` - Flag for human decision (list/respond/dismiss)
 
 ### Structured Workflows
+
 - `bd formula list` - See available workflow templates
 - `bd mol pour <name>` - Start structured workflow from formula
 
 ## Common Workflows
 
 **Starting work:**
+
 ```bash
 bd ready           # Find available work
 bd show <id>       # Review issue details
@@ -93,11 +101,13 @@ bd update <id> --claim  # Claim it
 ```
 
 **Completing work:**
+
 ```bash
 bd close <id1> <id2> ...    # Close all completed issues at once
 ```
 
 **Creating dependent work:**
+
 ```bash
 # Run bd create commands in parallel (use subagents for many items)
 bd create --title="Implement feature X" --description="Why this issue exists and what needs to be done" --type=feature

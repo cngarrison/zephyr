@@ -94,14 +94,14 @@ deno task dev
 
 **Other useful tasks**
 
-| Command | Purpose |
-|---|---|
-| `deno task dev` | Run engine + web in development mode |
-| `deno task build` | Fresh/Vite production build (required before compile) |
+| Command             | Purpose                                                  |
+| ------------------- | -------------------------------------------------------- |
+| `deno task dev`     | Run engine + web in development mode                     |
+| `deno task build`   | Fresh/Vite production build (required before compile)    |
 | `deno task compile` | Compile self-contained binaries for the current platform |
-| `deno check` | TypeScript type-checking |
-| `deno lint` | Linter |
-| `deno fmt` | Formatter |
+| `deno check`        | TypeScript type-checking                                 |
+| `deno lint`         | Linter                                                   |
+| `deno fmt`          | Formatter                                                |
 
 ---
 

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "preact/hooks";
-import * as echarts from "echarts";
-import type { Observation } from "@/lib/types.ts";
+import { useEffect, useRef, useState } from 'preact/hooks';
+import * as echarts from 'echarts';
+import type { Observation } from '@/lib/types.ts';
 
 interface Props {
   from: string;
@@ -15,11 +15,11 @@ export default function TemperatureChart({ from, to }: Props) {
   useEffect(() => {
     if (!divRef.current) return;
 
-    const dark = document.documentElement.classList.contains("dark");
-    const chart = echarts.init(divRef.current, dark ? "dark" : undefined);
+    const dark = document.documentElement.classList.contains('dark');
+    const chart = echarts.init(divRef.current, dark ? 'dark' : undefined);
 
     const handleResize = () => chart.resize();
-    globalThis.addEventListener("resize", handleResize);
+    globalThis.addEventListener('resize', handleResize);
 
     fetch(`/api/observations/range?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`)
       .then((r) => r.json())
@@ -32,30 +32,30 @@ export default function TemperatureChart({ from, to }: Props) {
           .map((o) => [o.timestamp * 1000, o.tempDewpoint]);
 
         chart.setOption({
-          backgroundColor: "transparent",
+          backgroundColor: 'transparent',
           grid: { top: 8, right: 8, bottom: 24, left: 48, containLabel: false },
-          tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
-          xAxis: { type: "time", axisLabel: { fontSize: 11 } },
-          yAxis: { name: "°C", nameLocation: "end" },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+          xAxis: { type: 'time', axisLabel: { fontSize: 11 } },
+          yAxis: { name: '°C', nameLocation: 'end' },
           series: [
             {
-              name: "Temperature",
-              type: "line",
+              name: 'Temperature',
+              type: 'line',
               smooth: true,
               data: tempData,
-              itemStyle: { color: "#38bdf8" },
-              lineStyle: { color: "#38bdf8" },
-              areaStyle: { color: "#38bdf8", opacity: 0.15 },
+              itemStyle: { color: '#38bdf8' },
+              lineStyle: { color: '#38bdf8' },
+              areaStyle: { color: '#38bdf8', opacity: 0.15 },
               showSymbol: false,
             },
             {
-              name: "Dew Point",
-              type: "line",
+              name: 'Dew Point',
+              type: 'line',
               smooth: true,
               data: dewData,
-              itemStyle: { color: "#818cf8" },
-              lineStyle: { color: "#818cf8" },
-              areaStyle: { color: "#818cf8", opacity: 0.1 },
+              itemStyle: { color: '#818cf8' },
+              lineStyle: { color: '#818cf8' },
+              areaStyle: { color: '#818cf8', opacity: 0.1 },
               showSymbol: false,
             },
           ],
@@ -68,24 +68,24 @@ export default function TemperatureChart({ from, to }: Props) {
       });
 
     return () => {
-      globalThis.removeEventListener("resize", handleResize);
+      globalThis.removeEventListener('resize', handleResize);
       chart.dispose();
     };
   }, [from, to]);
 
   return (
-    <div style="position: relative; height: 200px;">
+    <div style='position: relative; height: 200px;'>
       {loading && !error && (
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;">
+        <div style='position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;'>
           Loading...
         </div>
       )}
       {error && (
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;">
+        <div style='position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;'>
           No data
         </div>
       )}
-      <div ref={divRef} style="width: 100%; height: 200px;" />
+      <div ref={divRef} style='width: 100%; height: 200px;' />
     </div>
   );
 }

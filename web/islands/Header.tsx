@@ -67,58 +67,59 @@ export default function Header({ stationName, initialTime, timezone = 'UTC', alm
   });
 
   return (
-    <header style="background-color: var(--color-nav-bg); color: var(--color-nav-text);">
-      <div class="flex items-center gap-3 px-4 py-2">
-
+    <header style='background-color: var(--color-nav-bg); color: var(--color-nav-text);'>
+      <div class='flex items-center gap-3 px-4 py-2'>
         {/* ── Logo ────────────────────────────────────────────────────── */}
-        <a href="/" class="shrink-0 flex items-center gap-2.5 mr-4">
-          <img src="/logo-mark.svg" alt="" height="40" class="h-10 w-auto" />
-          {/*
+        <a href='/' class='shrink-0 flex items-center gap-2.5 mr-4'>
+          <img src='/logo-mark.svg' alt='' height='40' class='h-10 w-auto' />
+          {
+            /*
           <img src="/logo-mark.svg" alt="" height="40" class="h-10 w-auto dark:hidden" />
           <img src="/logo-mark-dark.svg" alt="" height="40" class="h-10 w-auto hidden dark:block" />
-          */}
-          <span class="text-xl font-bold tracking-tight text-[var(--color-nav-text)]">Zephyr</span>
+          */
+          }
+          <span class='text-xl font-bold tracking-tight text-[var(--color-nav-text)]'>Zephyr</span>
         </a>
 
         {/* ── Station name + datetime (stacked) ────────────────────────── */}
-        <div class="flex flex-col min-w-0 mr-auto">
-          <span class="text-sm font-semibold leading-tight truncate">{stationName}</span>
-          <span class="text-xs opacity-60 leading-tight">{formattedDate} · {formattedTime}</span>
+        <div class='flex flex-col min-w-0 mr-auto'>
+          <span class='text-sm font-semibold leading-tight truncate'>{stationName}</span>
+          <span class='text-xs opacity-60 leading-tight'>{formattedDate} · {formattedTime}</span>
         </div>
 
         {/* ── Almanac box (top-right, 2 rows) ──────────────────────────── */}
         {almanac && (
           <a
-            href="/almanac"
-            class="hidden sm:flex flex-col gap-0.5 text-xs px-3 py-1.5 rounded-lg shrink-0 transition-opacity hover:opacity-90"
-            style="background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.1);"
+            href='/almanac'
+            class='hidden sm:flex flex-col gap-0.5 text-xs px-3 py-1.5 rounded-lg shrink-0 transition-opacity hover:opacity-90'
+            style='background: rgba(0,0,0,0.22); border: 1px solid rgba(255,255,255,0.1);'
           >
             {/* Row 1 — sun */}
-            <div class="flex items-center gap-3 opacity-90">
-              <span class="flex items-center gap-1">
-                <i class="wi wi-sunrise" />
+            <div class='flex items-center gap-3 opacity-90'>
+              <span class='flex items-center gap-1'>
+                <i class='wi wi-sunrise' />
                 {fmtTime(almanac.sun.sunrise, timezone)}
               </span>
-              <span class="flex items-center gap-1">
-                <i class="wi wi-sunset" />
+              <span class='flex items-center gap-1'>
+                <i class='wi wi-sunset' />
                 {fmtTime(almanac.sun.sunset, timezone)}
               </span>
-              <span class="opacity-70">Day {fmtDayLength(almanac.sun.dayLengthSeconds)}</span>
+              <span class='opacity-70'>Day {fmtDayLength(almanac.sun.dayLengthSeconds)}</span>
             </div>
             {/* Row 2 — moon */}
-            <div class="flex items-center gap-3 opacity-90">
-              <span class="flex items-center gap-1">
-                <i class="wi wi-moonrise" />
+            <div class='flex items-center gap-3 opacity-90'>
+              <span class='flex items-center gap-1'>
+                <i class='wi wi-moonrise' />
                 {almanac.moon.rise ? fmtTime(almanac.moon.rise, timezone) : '—'}
               </span>
-              <span class="flex items-center gap-1">
-                <i class="wi wi-moonset" />
+              <span class='flex items-center gap-1'>
+                <i class='wi wi-moonset' />
                 {almanac.moon.set ? fmtTime(almanac.moon.set, timezone) : '—'}
               </span>
-              <span class="flex items-center gap-1">
+              <span class='flex items-center gap-1'>
                 <i class={`wi ${moonIconClass(almanac.moon.phase)}`} />
                 {almanac.moon.phaseName}
-                <span class="opacity-70">({Math.round(almanac.moon.fraction * 100)}%)</span>
+                <span class='opacity-70'>({Math.round(almanac.moon.fraction * 100)}%)</span>
               </span>
             </div>
           </a>

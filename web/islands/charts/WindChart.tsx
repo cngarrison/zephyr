@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "preact/hooks";
-import * as echarts from "echarts";
-import type { Observation } from "@/lib/types.ts";
+import { useEffect, useRef, useState } from 'preact/hooks';
+import * as echarts from 'echarts';
+import type { Observation } from '@/lib/types.ts';
 
 interface Props {
   from: string;
@@ -15,11 +15,11 @@ export default function WindChart({ from, to }: Props) {
   useEffect(() => {
     if (!divRef.current) return;
 
-    const dark = document.documentElement.classList.contains("dark");
-    const chart = echarts.init(divRef.current, dark ? "dark" : undefined);
+    const dark = document.documentElement.classList.contains('dark');
+    const chart = echarts.init(divRef.current, dark ? 'dark' : undefined);
 
     const handleResize = () => chart.resize();
-    globalThis.addEventListener("resize", handleResize);
+    globalThis.addEventListener('resize', handleResize);
 
     fetch(`/api/observations/range?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`)
       .then((r) => r.json())
@@ -32,28 +32,28 @@ export default function WindChart({ from, to }: Props) {
           .map((o) => [o.timestamp * 1000, o.windGust]);
 
         chart.setOption({
-          backgroundColor: "transparent",
+          backgroundColor: 'transparent',
           grid: { top: 8, right: 8, bottom: 24, left: 48, containLabel: false },
-          tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
-          xAxis: { type: "time", axisLabel: { fontSize: 11 } },
-          yAxis: { name: "m/s", nameLocation: "end", min: 0 },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+          xAxis: { type: 'time', axisLabel: { fontSize: 11 } },
+          yAxis: { name: 'm/s', nameLocation: 'end', min: 0 },
           series: [
             {
-              name: "Wind Speed",
-              type: "line",
+              name: 'Wind Speed',
+              type: 'line',
               smooth: true,
               data: speedData,
-              itemStyle: { color: "#fb923c" },
-              lineStyle: { color: "#fb923c" },
+              itemStyle: { color: '#fb923c' },
+              lineStyle: { color: '#fb923c' },
               showSymbol: false,
             },
             {
-              name: "Wind Gust",
-              type: "line",
+              name: 'Wind Gust',
+              type: 'line',
               smooth: true,
               data: gustData,
-              itemStyle: { color: "#f87171" },
-              lineStyle: { color: "#f87171", type: "dashed" },
+              itemStyle: { color: '#f87171' },
+              lineStyle: { color: '#f87171', type: 'dashed' },
               showSymbol: false,
             },
           ],
@@ -66,24 +66,24 @@ export default function WindChart({ from, to }: Props) {
       });
 
     return () => {
-      globalThis.removeEventListener("resize", handleResize);
+      globalThis.removeEventListener('resize', handleResize);
       chart.dispose();
     };
   }, [from, to]);
 
   return (
-    <div style="position: relative; height: 200px;">
+    <div style='position: relative; height: 200px;'>
       {loading && !error && (
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;">
+        <div style='position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;'>
           Loading...
         </div>
       )}
       {error && (
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;">
+        <div style='position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;'>
           No data
         </div>
       )}
-      <div ref={divRef} style="width: 100%; height: 200px;" />
+      <div ref={divRef} style='width: 100%; height: 200px;' />
     </div>
   );
 }

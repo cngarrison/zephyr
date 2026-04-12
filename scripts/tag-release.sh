@@ -134,7 +134,7 @@ fi
 # ── Update version.ts ────────────────────────────────────────────────────────
 # sed -i works differently on macOS vs Linux; use a temp file to be safe.
 TMP="$(mktemp)"
-sed "s/export const VERSION = \"[^\"]*\"/export const VERSION = \"${NEW_VERSION}\"/" \
+sed "s/export const VERSION = \'[^\']*\'/export const VERSION = \'${NEW_VERSION}\'/" \
   "$VERSION_FILE" > "$TMP"
 mv "$TMP" "$VERSION_FILE"
 info "Updated $VERSION_FILE  →  ${NEW_VERSION}"

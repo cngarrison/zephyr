@@ -1,8 +1,8 @@
-import { page } from "fresh";
-import { define } from "@/utils.ts";
-import { fetchAlmanac, fetchStationConfig } from "@/lib/api.ts";
-import type { AlmanacData } from "@/lib/types.ts";
-import AggregateView from "@/components/layout/AggregateView.tsx";
+import { page } from 'fresh';
+import { define } from '@/utils.ts';
+import { fetchAlmanac, fetchStationConfig } from '@/lib/api.ts';
+import type { AlmanacData } from '@/lib/types.ts';
+import AggregateView from '@/components/layout/AggregateView.tsx';
 
 interface PageData {
   stationName: string;
@@ -10,7 +10,7 @@ interface PageData {
   timezone: string;
   from: string;
   to: string;
-  bucket: "hour";
+  bucket: 'hour';
   pathname: string;
   almanac: AlmanacData | null;
 }
@@ -35,13 +35,13 @@ export const handler = define.handlers<PageData>({
       timezone: tz,
       from,
       to,
-      bucket: "hour",
-      pathname: "/yesterday",
+      bucket: 'hour',
+      pathname: '/yesterday',
       almanac,
     });
   },
 });
 
 export default define.page(function YesterdayPage({ data }: { data: PageData }) {
-  return <AggregateView {...data} title="Yesterday" />;
+  return <AggregateView {...data} title='Yesterday' />;
 });

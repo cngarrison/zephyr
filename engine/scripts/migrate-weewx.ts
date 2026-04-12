@@ -20,14 +20,14 @@
  *   source .env && deno task migrate
  */
 
-import { DatabaseSync } from "node:sqlite";
-import { createConnection } from "mysql2/promise";
-import { ensureDir } from "@std/fs";
-import { dirname, resolve } from "@std/path";
-import { config, primaryStation } from "../config.ts";
-import { Units } from "../src/domain/units.ts";
-import { runMigrations } from "../src/storage/providers/sqlite/migrate.ts";
-import { load as loadDotenv } from "@std/dotenv";
+import { DatabaseSync } from 'node:sqlite';
+import { createConnection } from 'mysql2/promise';
+import { ensureDir } from '@std/fs';
+import { dirname, resolve } from '@std/path';
+import { config, primaryStation } from '../config.ts';
+import { Units } from '../src/domain/units.ts';
+import { runMigrations } from '../src/storage/providers/sqlite/migrate.ts';
+import { load as loadDotenv } from '@std/dotenv';
 
 // ---------------------------------------------------------------------------
 // Environment
@@ -47,23 +47,23 @@ function env(name: string, fallback?: string): string {
   return val as string;
 }
 
-const MYSQL_HOST     = env("WEEWX_MYSQL_HOST",     "localhost");
-const MYSQL_PORT     = Number(env("WEEWX_MYSQL_PORT", "3306"));
-const MYSQL_USER     = env("WEEWX_MYSQL_USER");
-const MYSQL_PASSWORD = env("WEEWX_MYSQL_PASSWORD", "");
-const MYSQL_DATABASE = env("WEEWX_MYSQL_DATABASE");
+const MYSQL_HOST = env('WEEWX_MYSQL_HOST', 'localhost');
+const MYSQL_PORT = Number(env('WEEWX_MYSQL_PORT', '3306'));
+const MYSQL_USER = env('WEEWX_MYSQL_USER');
+const MYSQL_PASSWORD = env('WEEWX_MYSQL_PASSWORD', '');
+const MYSQL_DATABASE = env('WEEWX_MYSQL_DATABASE');
 // Destination comes from zephyr.toml via the config singleton.
-const SQLITE_PATH    = resolve(config.storage.sqlite.path);
-const STATION_ID     = primaryStation().id;
+const SQLITE_PATH = resolve(config.storage.sqlite.path);
+const STATION_ID = primaryStation().id;
 
 // ---------------------------------------------------------------------------
 // weewx unit systems
 // ---------------------------------------------------------------------------
 
 /** weewx usUnits codes */
-const US       = 1;   // °F, inHg, mph, inch, in/hr
-const METRIC   = 16;  // °C, hPa, km/h, mm, mm/hr
-const METRICWX = 17;  // °C, hPa, m/s,  mm, mm/hr
+const US = 1; // °F, inHg, mph, inch, in/hr
+const METRIC = 16; // °C, hPa, km/h, mm, mm/hr
+const METRICWX = 17; // °C, hPa, m/s,  mm, mm/hr
 
 function n(v: unknown): number | null {
   return v == null ? null : Number(v);
@@ -84,9 +84,9 @@ function toHpa(v: unknown, us: number): number | null {
 function toMs(v: unknown, us: number): number | null {
   const val = n(v);
   if (val === null) return null;
-  if (us === US)     return Units.mphToMs(val);
-  if (us === METRIC) return val / 3.6;  // km/h → m/s
-  return val;                            // METRICWX already m/s
+  if (us === US) return Units.mphToMs(val);
+  if (us === METRIC) return val / 3.6; // km/h → m/s
+  return val; // METRICWX already m/s
 }
 
 function toMmHr(v: unknown, us: number): number | null {
@@ -108,7 +108,7 @@ function toMm(v: unknown, us: number): number | null {
 const BATCH_SIZE = 500;
 
 async function main() {
-  console.log("🌤  Zephyr — weewx migration");
+  console.log('🌤  Zephyr — weewx migration');
   console.log(`   MySQL  : ${MYSQL_USER}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}`);
   console.log(`   SQLite : ${SQLITE_PATH}`);
   console.log(`   Station: ${STATION_ID}`);
@@ -123,7 +123,7 @@ async function main() {
   // Find the highest timestamp already stored for this station so we can
   // skip everything up to that point (cursor-based resume).
   const maxRow = db
-    .prepare("SELECT MAX(timestamp) AS m FROM observations WHERE station_id = ?")
+    .prepare('SELECT MAX(timestamp) AS m FROM observations WHERE station_id = ?')
     .get(STATION_ID) as { m: number | null } | undefined;
   const since: number = maxRow?.m ?? 0;
 
@@ -132,7 +132,7 @@ async function main() {
       `ℹ  Resuming after ${new Date(since * 1000).toISOString()} (epoch ${since})`,
     );
   } else {
-    console.log("ℹ  No existing records — full migration.");
+    console.log('ℹ  No existing records — full migration.');
   }
   console.log();
 
@@ -151,32 +151,32 @@ async function main() {
   `);
 
   // ── Connect to MySQL ─────────────────────────────────────────────────────
-  console.log("Connecting to MySQL...");
+  console.log('Connecting to MySQL...');
   const conn = await createConnection({
-    host:     MYSQL_HOST,
-    port:     MYSQL_PORT,
-    user:     MYSQL_USER,
+    host: MYSQL_HOST,
+    port: MYSQL_PORT,
+    user: MYSQL_USER,
     password: MYSQL_PASSWORD,
     database: MYSQL_DATABASE,
   });
-  console.log("Connected.\n");
+  console.log('Connected.\n');
 
   let totalRead = 0;
-  let inserted  = 0;
-  let skipped   = 0;
-  let cursorTs  = since;
+  let inserted = 0;
+  let skipped = 0;
+  let cursorTs = since;
 
   try {
     // Record count for progress display (informational; not a hard limit).
     const [countRows] = await conn.query(
-      "SELECT COUNT(*) AS n FROM archive WHERE dateTime > ?",
+      'SELECT COUNT(*) AS n FROM archive WHERE dateTime > ?',
       [since],
     ) as [Record<string, unknown>[], unknown];
     const total = Number((countRows as Record<string, unknown>[])[0]?.n ?? 0);
 
     console.log(`📊 Records to process: ${total}`);
     if (total === 0) {
-      console.log("✅ Already up to date — nothing to do.");
+      console.log('✅ Already up to date — nothing to do.');
       return;
     }
     console.log();
@@ -195,7 +195,7 @@ async function main() {
       const batch = rows as Record<string, unknown>[];
       if (batch.length === 0) break;
 
-      db.exec("BEGIN");
+      db.exec('BEGIN');
       try {
         for (const row of batch) {
           const us = Number(row.usUnits ?? US);
@@ -208,41 +208,41 @@ async function main() {
           }
 
           const result = insertStmt.run(
-            n(row.dateTime),  // INTEGER epoch seconds
+            n(row.dateTime), // INTEGER epoch seconds
             STATION_ID,
             // Temperatures → °C
-            toC(row.inTemp,      us),   // temp_indoor
-            toC(row.outTemp,     us),   // temp_outdoor
-            toC(row.dewpoint,    us),   // temp_dewpoint
-            toC(row.appTemp,     us),   // temp_feels_like (may be null)
+            toC(row.inTemp, us), // temp_indoor
+            toC(row.outTemp, us), // temp_outdoor
+            toC(row.dewpoint, us), // temp_dewpoint
+            toC(row.appTemp, us), // temp_feels_like (may be null)
             // Humidity %  (dimensionless — no conversion)
-            n(row.inHumidity),          // humidity_indoor
-            n(row.outHumidity),         // humidity_outdoor
+            n(row.inHumidity), // humidity_indoor
+            n(row.outHumidity), // humidity_outdoor
             // Pressure → hPa
-            toHpa(row.pressure,  us),   // pressure_abs  (station pressure)
-            toHpa(row.barometer, us),   // pressure_rel  (sea-level)
+            toHpa(row.pressure, us), // pressure_abs  (station pressure)
+            toHpa(row.barometer, us), // pressure_rel  (sea-level)
             // Wind → m/s, direction degrees (no conversion)
-            toMs(row.windSpeed,  us),   // wind_speed
-            toMs(row.windGust,   us),   // wind_gust
-            n(row.windDir),             // wind_direction
+            toMs(row.windSpeed, us), // wind_speed
+            toMs(row.windGust, us), // wind_gust
+            n(row.windDir), // wind_direction
             // Rain → mm/hr or mm
-            toMmHr(row.rainRate, us),   // rain_rate
-            null,                       // rain_daily  (not in archive interval)
-            null,                       // rain_weekly
-            null,                       // rain_monthly
-            null,                       // rain_yearly
-            toMm(row.rain,       us),   // rain_event  (interval accumulation)
+            toMmHr(row.rainRate, us), // rain_rate
+            null, // rain_daily  (not in archive interval)
+            null, // rain_weekly
+            null, // rain_monthly
+            null, // rain_yearly
+            toMm(row.rain, us), // rain_event  (interval accumulation)
             // Solar / UV (W/m², index — no conversion)
-            n(row.radiation),           // solar_radiation
-            n(row.UV),                  // uv_index
+            n(row.radiation), // solar_radiation
+            n(row.UV), // uv_index
           ) as { changes: number; lastInsertRowid: number | bigint };
 
           if (result.changes > 0) inserted++;
           else skipped++;
         }
-        db.exec("COMMIT");
+        db.exec('COMMIT');
       } catch (err) {
-        db.exec("ROLLBACK");
+        db.exec('ROLLBACK');
         throw err;
       }
 
@@ -256,13 +256,12 @@ async function main() {
     }
 
     console.log();
-    console.log("─".repeat(50));
-    console.log("✅  Migration complete");
+    console.log('─'.repeat(50));
+    console.log('✅  Migration complete');
     console.log(`   Records read    : ${totalRead}`);
     console.log(`   Inserted        : ${inserted}`);
     console.log(`   Skipped (dupes) : ${skipped}`);
-    console.log("─".repeat(50));
-
+    console.log('─'.repeat(50));
   } finally {
     await conn.end();
     db.close();
@@ -271,7 +270,7 @@ async function main() {
 
 main().catch((err: unknown) => {
   console.error(
-    "\n❌  Migration failed:",
+    '\n❌  Migration failed:',
     err instanceof Error ? err.message : String(err),
   );
   Deno.exit(1);

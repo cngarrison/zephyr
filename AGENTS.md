@@ -130,6 +130,7 @@ Every new driver, storage provider, and web route **MUST** ship with tests in th
 ### Minimum Assertions by Contribution Type
 
 **New ingest driver (push or poll):**
+
 - [ ] Timestamp uses server receive time (`Math.floor(Date.now() / 1000)`), not device-reported field
 - [ ] `stationId` equals the configured `defaultStationId` argument, not the device push ID
 - [ ] All temperatures are in °C (assert known °F input → expected °C output with `assertAlmostEquals`)
@@ -140,16 +141,19 @@ Every new driver, storage provider, and web route **MUST** ship with tests in th
 - [ ] Extended sensors (soil, lightning, etc.) appear in `readings[]`, not the `Observation`
 
 **New storage adapter:**
+
 - [ ] All `StorageAdapter` interface methods implemented (no stubs)
 - [ ] Run `adapter-contract.test.ts` against the new provider
 - [ ] Migration runner is idempotent (safe to run twice)
 
 **New web route:**
+
 - [ ] SSR data fetch succeeds with mocked engine API (uses `mockEngineAPI()` from `web/tests/lib/mock-fetch.ts`)
 - [ ] Renders gracefully when API returns null / empty array
 - [ ] Date range calculations produce correct timestamps (if using Temporal)
 
 **New web island:**
+
 - [ ] Signal reads/writes propagate correctly
 - [ ] SSR shape / rendered markup checked via `preact-render-to-string` (no DOM setup required)
 - [ ] Tests that need browser APIs (localStorage, matchMedia, classList) call `setupTestEnvironment()` from `web/tests/lib/test-env.ts` before rendering, and `cleanupTestEnvironment()` in a `finally` block

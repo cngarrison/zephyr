@@ -28,18 +28,18 @@
  *   deno task --cwd engine run -A scripts/dedup-observations.ts --dry-run
  */
 
-import { DatabaseSync } from "node:sqlite";
-import { resolve } from "@std/path";
-import { config, primaryStation } from "../config.ts";
+import { DatabaseSync } from 'node:sqlite';
+import { resolve } from '@std/path';
+import { config, primaryStation } from '../config.ts';
 
 const SQLITE_PATH = resolve(config.storage.sqlite.path);
-const STATION_ID  = primaryStation().id;
-const DRY_RUN     = Deno.args.includes("--dry-run");
+const STATION_ID = primaryStation().id;
+const DRY_RUN = Deno.args.includes('--dry-run');
 
-console.log("🧹 Zephyr — observation dedup");
+console.log('🧹 Zephyr — observation dedup');
 console.log(`   SQLite  : ${SQLITE_PATH}`);
 console.log(`   Station : ${STATION_ID}`);
-console.log(`   Mode    : ${DRY_RUN ? "DRY RUN (no changes)" : "LIVE"}`);
+console.log(`   Mode    : ${DRY_RUN ? 'DRY RUN (no changes)' : 'LIVE'}`);
 console.log();
 
 const db = new DatabaseSync(SQLITE_PATH);
@@ -49,22 +49,24 @@ const db = new DatabaseSync(SQLITE_PATH);
 // ---------------------------------------------------------------------------
 
 const totalRow = db
-  .prepare("SELECT COUNT(*) AS n FROM observations WHERE station_id = ?")
+  .prepare('SELECT COUNT(*) AS n FROM observations WHERE station_id = ?')
   .get(STATION_ID) as { n: number };
 console.log(`📊 Total observations for station '${STATION_ID}': ${totalRow.n}`);
 
 // Find first and last timestamps
 const rangeRow = db.prepare(
-  "SELECT MIN(timestamp) AS first, MAX(timestamp) AS last FROM observations WHERE station_id = ?",
+  'SELECT MIN(timestamp) AS first, MAX(timestamp) AS last FROM observations WHERE station_id = ?',
 ).get(STATION_ID) as { first: number; last: number };
 
 if (!rangeRow.first) {
-  console.log("No records found — nothing to do.");
+  console.log('No records found — nothing to do.');
   db.close();
   Deno.exit(0);
 }
 
-console.log(`   Range   : ${new Date(rangeRow.first * 1000).toISOString()} → ${new Date(rangeRow.last * 1000).toISOString()}`);
+console.log(
+  `   Range   : ${new Date(rangeRow.first * 1000).toISOString()} → ${new Date(rangeRow.last * 1000).toISOString()}`,
+);
 console.log();
 
 // ---------------------------------------------------------------------------
@@ -80,8 +82,8 @@ const firstLiveRow = db.prepare(`
 `).get(STATION_ID) as { t: number | null };
 
 if (!firstLiveRow.t) {
-  console.log("ℹ  No non-boundary records found — all records appear to be from weewx.");
-  console.log("   Nothing to deduplicate.");
+  console.log('ℹ  No non-boundary records found — all records appear to be from weewx.');
+  console.log('   Nothing to deduplicate.');
   db.close();
   Deno.exit(0);
 }
@@ -111,7 +113,7 @@ console.log(`   └─ non-boundary (live)     : ${overlapLive.n}  ← will be k
 console.log();
 
 if (overlapBoundary.n === 0) {
-  console.log("✅ No weewx overlap records found — nothing to delete.");
+  console.log('✅ No weewx overlap records found — nothing to delete.');
   db.close();
   Deno.exit(0);
 }
@@ -133,19 +135,15 @@ const samples = db.prepare(`
   humidity_outdoor: number | null;
 }>;
 
-console.log("Sample weewx overlap records (first 5 to be deleted):");
-console.log("  timestamp            | temp_out | pressure_rel | humidity_out");
-console.log("  ---------------------|----------|--------------|-------------");
+console.log('Sample weewx overlap records (first 5 to be deleted):');
+console.log('  timestamp            | temp_out | pressure_rel | humidity_out');
+console.log('  ---------------------|----------|--------------|-------------');
 for (const r of samples) {
   const dt = new Date(r.timestamp * 1000).toISOString();
   console.log(
-    `  ${dt} | ${
-      r.temp_outdoor?.toFixed(1).padStart(8) ?? "    null"
-    } | ${
-      r.pressure_rel?.toFixed(1).padStart(12) ?? "        null"
-    } | ${
-      r.humidity_outdoor?.toFixed(1).padStart(12) ?? "        null"
-    }`,
+    `  ${dt} | ${r.temp_outdoor?.toFixed(1).padStart(8) ?? '    null'} | ${
+      r.pressure_rel?.toFixed(1).padStart(12) ?? '        null'
+    } | ${r.humidity_outdoor?.toFixed(1).padStart(12) ?? '        null'}`,
   );
 }
 console.log();
@@ -156,25 +154,25 @@ console.log();
 
 if (DRY_RUN) {
   console.log(`🔎 DRY RUN — would delete ${overlapBoundary.n} weewx records from overlap zone.`);
-  console.log("   Re-run without --dry-run to apply.");
+  console.log('   Re-run without --dry-run to apply.');
 } else {
   console.log(`🗑  Deleting ${overlapBoundary.n} weewx overlap records...`);
-  db.exec("BEGIN");
+  db.exec('BEGIN');
   try {
     const result = db.prepare(`
       DELETE FROM observations
       WHERE station_id = ? AND timestamp >= ? AND (timestamp % 300) = 0
     `).run(STATION_ID, overlapStart) as { changes: number };
-    db.exec("COMMIT");
+    db.exec('COMMIT');
     console.log(`✅ Deleted ${result.changes} records.`);
   } catch (err) {
-    db.exec("ROLLBACK");
+    db.exec('ROLLBACK');
     throw err;
   }
 
   // Post-dedup count
   const afterRow = db
-    .prepare("SELECT COUNT(*) AS n FROM observations WHERE station_id = ?")
+    .prepare('SELECT COUNT(*) AS n FROM observations WHERE station_id = ?')
     .get(STATION_ID) as { n: number };
   console.log(`   Remaining records: ${afterRow.n}`);
 }

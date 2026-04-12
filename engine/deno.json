@@ -34,9 +34,6 @@
     "semiColons": true,
     "singleQuote": true,
     "proseWrap": "preserve",
-    "include": [
-      "tests/"
-    ],
     "exclude": [
       "data/*"
     ]

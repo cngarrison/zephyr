@@ -2,8 +2,8 @@ name: Cleanup Action Caches
 
 on:
   schedule:
-    - cron: '0 2 * * 0'  # Every Sunday at 2am UTC
-  workflow_dispatch:      # Allow manual trigger
+    - cron: '0 2 * * 0' # Every Sunday at 2am UTC
+  workflow_dispatch: # Allow manual trigger
 
 permissions:
   actions: write

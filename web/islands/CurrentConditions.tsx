@@ -1,7 +1,7 @@
 import { useEffect } from 'preact/hooks';
 import type { Observation } from '@/lib/types.ts';
 import ConditionsGrid from '@/components/conditions/ConditionsGrid.tsx';
-import { latestObservation, todayStats, startObservationPolling } from '@/lib/hooks/useObservationState.ts';
+import { latestObservation, startObservationPolling, todayStats } from '@/lib/hooks/useObservationState.ts';
 
 interface CurrentConditionsProps {
   initial: Observation | null;

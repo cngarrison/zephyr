@@ -1,6 +1,6 @@
-import type { Pool } from "mysql2/promise";
-import * as m001 from "./migrations/001_initial_schema.ts";
-import * as m002 from "./migrations/002_daily_aggregates.ts";
+import type { Pool } from 'mysql2/promise';
+import * as m001 from './migrations/001_initial_schema.ts';
+import * as m002 from './migrations/002_daily_aggregates.ts';
 
 export interface Migration {
   version: number;
@@ -9,8 +9,8 @@ export interface Migration {
 }
 
 export const migrations: Migration[] = [
-  { version: 1, name: "initial_schema",    up: m001.up },
-  { version: 2, name: "daily_aggregates",  up: m002.up },
+  { version: 1, name: 'initial_schema', up: m001.up },
+  { version: 2, name: 'daily_aggregates', up: m002.up },
 ];
 
 async function ensureSchemaVersion(pool: Pool): Promise<void> {
@@ -27,7 +27,7 @@ async function ensureSchemaVersion(pool: Pool): Promise<void> {
 async function getCurrentVersion(pool: Pool): Promise<number> {
   try {
     const [rows] = await pool.execute(
-      "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1",
+      'SELECT version FROM schema_version ORDER BY version DESC LIMIT 1',
     );
     const r = (rows as { version: number }[])[0];
     return r?.version ?? 0;
@@ -38,7 +38,7 @@ async function getCurrentVersion(pool: Pool): Promise<number> {
 
 async function recordMigration(pool: Pool, version: number, name: string): Promise<void> {
   await pool.execute(
-    "INSERT INTO schema_version (version, name) VALUES (?, ?)",
+    'INSERT INTO schema_version (version, name) VALUES (?, ?)',
     [version, name],
   );
 }
