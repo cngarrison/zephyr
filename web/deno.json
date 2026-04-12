@@ -29,7 +29,8 @@
     "@std/toml": "jsr:@std/toml@^1.0.11",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.6",
     "@std/dotenv/load": "jsr:@std/dotenv@^0.225.6/load",
-    "echarts": "npm:echarts@^6.0.0"
+    "echarts": "npm:echarts@^6.0.0",
+    "@zephyr/shared": "../shared/types.ts"
   },
   "compilerOptions": {
     "lib": ["dom", "dom.asynciterable", "dom.iterable", "deno.ns"],

@@ -1,0 +1,18 @@
+{
+  "common_list": [
+    { "id": "0x02", "val": "68.0",   "unit": "\u2109" },
+    { "id": "0x07", "val": "50",     "unit": "%" },
+    { "id": "0x03", "val": "29.920", "unit": "inHg" },
+    { "id": "0x0B", "val": "180",   "unit": "" },
+    { "id": "0x0C", "val": "11.185", "unit": "mph" },
+    { "id": "0x0D", "val": "17.895", "unit": "mph" }
+  ],
+  "rain": [
+    { "id": "0x0E", "val": "0.000", "unit": "in/hr" },
+    { "id": "0x10", "val": "0.000", "unit": "in" }
+  ],
+  "solar_and_uvi": [
+    { "id": "0x15", "val": "500.12", "unit": "W/m\u00b2" },
+    { "id": "0x16", "val": "3",      "unit": "" }
+  ]
+}

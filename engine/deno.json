@@ -9,12 +9,17 @@
     "@std/toml": "jsr:@std/toml@^1.0.11",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.6",
     "@std/fs": "jsr:@std/fs@^1.0.23",
-    "@std/path": "jsr:@std/path@^1.1.4"
+    "@std/path": "jsr:@std/path@^1.1.4",
+    "@std/assert": "jsr:@std/assert@^1.0.0",
+    "@std/testing": "jsr:@std/testing@^1.0.0",
+    "@zephyr/shared": "../shared/types.ts",
+    "@zephyr/shared/testing": "../shared/testing/fixtures.ts"
   },
   "tasks": {
     "start": "deno run --allow-net --allow-read --allow-write --allow-env main.ts",
     "dev": "deno run --watch --allow-net --allow-read --allow-write --allow-env main.ts",
     "check:types": "deno check ./main.ts",
+    "test": "deno test --allow-read --allow-write --allow-env tests/",
     "migrate": "deno run -A scripts/migrate-weewx.ts",
     "dedup": "deno run -A scripts/dedup-observations.ts",
     "format": "deno fmt"
