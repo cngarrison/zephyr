@@ -1,0 +1,11 @@
+{
+  "name": "@zephyr/shared",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./types.ts",
+    "./testing": "./testing/fixtures.ts"
+  },
+  "compilerOptions": {
+    "strict": true
+  }
+}
