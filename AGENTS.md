@@ -115,7 +115,57 @@ To create a new theme: override the `--color-*` vars under a new CSS selector (e
 
 ---
 
-## 8. Issue Tracker
+## 8. How to Write Tests for a New Contribution
+
+Every new driver, storage provider, and web route **MUST** ship with tests in the same PR. No exceptions.
+
+### Template Files
+
+- **`engine/tests/ingest/normalizer-template.test.ts`** — exhaustive teaching document for new ingest driver tests (11 sections, covers timestamp contract, SI unit contracts, missing field handling, extended sensor readings). Copy this file and adapt it for every new protocol.
+- **`engine/tests/storage/mock-adapter.ts`** — `MockStorageAdapter` for tests that need a `StorageAdapter` without a real database.
+- **`engine/tests/storage/adapter-contract.test.ts`** — contract test suite to run against any new storage provider.
+- **`web/tests/lib/mock-fetch.ts`** — `mockEngineAPI()` for web route / island tests.
+- **`web/tests/lib/test-env.ts`** — `setupTestEnvironment()` / `cleanupTestEnvironment()` bootstraps a happy-dom `Window` for island tests that require browser APIs (localStorage, matchMedia, classList). Use only when DOM interaction is needed; prefer `preact-render-to-string` for SSR shape checks.
+
+### Minimum Assertions by Contribution Type
+
+**New ingest driver (push or poll):**
+- [ ] Timestamp uses server receive time (`Math.floor(Date.now() / 1000)`), not device-reported field
+- [ ] `stationId` equals the configured `defaultStationId` argument, not the device push ID
+- [ ] All temperatures are in °C (assert known °F input → expected °C output with `assertAlmostEquals`)
+- [ ] All wind speeds are in m/s
+- [ ] All rain values are in mm (rate in mm/hr)
+- [ ] All pressures are in hPa
+- [ ] Missing/empty fields produce `undefined`, not `NaN` or `0`
+- [ ] Extended sensors (soil, lightning, etc.) appear in `readings[]`, not the `Observation`
+
+**New storage adapter:**
+- [ ] All `StorageAdapter` interface methods implemented (no stubs)
+- [ ] Run `adapter-contract.test.ts` against the new provider
+- [ ] Migration runner is idempotent (safe to run twice)
+
+**New web route:**
+- [ ] SSR data fetch succeeds with mocked engine API (uses `mockEngineAPI()` from `web/tests/lib/mock-fetch.ts`)
+- [ ] Renders gracefully when API returns null / empty array
+- [ ] Date range calculations produce correct timestamps (if using Temporal)
+
+**New web island:**
+- [ ] Signal reads/writes propagate correctly
+- [ ] SSR shape / rendered markup checked via `preact-render-to-string` (no DOM setup required)
+- [ ] Tests that need browser APIs (localStorage, matchMedia, classList) call `setupTestEnvironment()` from `web/tests/lib/test-env.ts` before rendering, and `cleanupTestEnvironment()` in a `finally` block
+- [ ] No module-level signal state created inside the island file — shared signals come from `useObservationState.ts`
+
+### Running Tests
+
+```bash
+deno task test:engine   # engine tests
+deno task test:web      # web tests
+deno task test:all      # both
+```
+
+---
+
+## 9. Issue Tracker
 
 Zephyr uses **beads** (`bd` CLI). Check open issues before starting work.
 
@@ -129,13 +179,14 @@ Issue IDs are short alphanumeric codes (e.g. `zephyr-0pv`). Epics group related 
 
 ---
 
-## 9. Before Submitting
+## 10. Before Submitting
 
 ```bash
+deno task test:all          # all tests must pass
 deno check engine/main.ts   # type-check engine
 deno check web/main.ts      # type-check web
 deno lint                   # lint all
 deno fmt                    # format all
 ```
 
-All four must pass with no errors or warnings.
+All five must pass with no errors or warnings.
