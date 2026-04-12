@@ -14,6 +14,7 @@ weewx is a capable system but has accumulated complexity over many years of Pyth
 ## Features
 
 ### Current
+
 - Personal weather station support via WU push, Ecowitt push, and LAN API poll (currently: Ecowitt GW-series gateways)
 - Plugin-based storage system — SQLite (default) and MySQL adapters
 - Auto-normalises all data to SI units internally
@@ -29,6 +30,7 @@ weewx is a capable system but has accumulated complexity over many years of Pyth
 - weewx data migration script
 
 ### Planned
+
 - Live updates via SSE (currently polling)
 - Third-party embeds (Windy Map, BOM radar, etc.)
 - Cloud upload adapters (Weather Underground, Ecowitt, CWOP)
@@ -54,10 +56,10 @@ Browser ◀── Web (Fresh v2, :8081) ◀── Engine REST API
 
 Two Deno packages in a workspace:
 
-| Package | Description |
-|---|---|
+| Package   | Description                    |
+| --------- | ------------------------------ |
 | `engine/` | Data ingest, storage, REST API |
-| `web/` | Fresh v2 + Vite dashboard |
+| `web/`    | Fresh v2 + Vite dashboard      |
 
 Both compile to self-contained binaries via `deno compile`.
 
@@ -65,7 +67,7 @@ Both compile to self-contained binaries via `deno compile`.
 
 ### Prerequisites
 
-- [Deno](https://deno.com) v2.2+ *(development only — not required for binary or package installs)*
+- [Deno](https://deno.com) v2.2+ _(development only — not required for binary or package installs)_
 - A personal weather station with a network gateway. Currently, Ecowitt GW-series gateways (GW1000, GW1100, GW2000) are supported via WU push, Ecowitt push, and LAN API polling.
 
 ### Setup
@@ -95,12 +97,12 @@ deno task dev
 
 Point your gateway to push to the engine:
 
-| Protocol | URL |
-|---|---|
-| Weather Underground | `http://<host>:8080/ingest/wu` |
-| Ecowitt | `http://<host>:8080/ingest/ecowitt` |
+| Protocol            | URL                                 |
+| ------------------- | ----------------------------------- |
+| Weather Underground | `http://<host>:8080/ingest/wu`      |
+| Ecowitt             | `http://<host>:8080/ingest/ecowitt` |
 
-For Ecowitt gateways (GW1000 etc.): in the Ecowitt app or gateway web UI, go to *Weather Services → Customized* and set the server IP, path, and port.
+For Ecowitt gateways (GW1000 etc.): in the Ecowitt app or gateway web UI, go to _Weather Services → Customized_ and set the server IP, path, and port.
 
 ### Test ingest
 
@@ -149,10 +151,10 @@ The `PORT` and `HOSTNAME` environment variables for the web daemon are set via s
 
 Storage is plugin-based. The `DB_PROVIDER` setting in `[storage]` selects the adapter. Each adapter lives under `engine/src/storage/providers/` and owns its own forward-only migration runner.
 
-| Provider | Config section | Notes |
-|---|---|---|
-| `sqlite` | `[storage.sqlite]` | Default. `path` supports NFS/network mounts. |
-| `mysql` | `[storage.mysql]` | Requires `host`, `port`, `user`, `password`, `database`. |
+| Provider | Config section     | Notes                                                    |
+| -------- | ------------------ | -------------------------------------------------------- |
+| `sqlite` | `[storage.sqlite]` | Default. `path` supports NFS/network mounts.             |
+| `mysql`  | `[storage.mysql]`  | Requires `host`, `port`, `user`, `password`, `database`. |
 
 All values are stored in SI units. Imperial→SI conversion happens in the ingest normaliser.
 
@@ -231,17 +233,17 @@ journalctl -u zephyr-engine -u zephyr-web -f
 
 Full documentation is in the [`docs/`](./docs/) directory.
 
-| Document | Description |
-|---|---|
-| [docs/install.md](./docs/install.md) | All install methods — one-liner, `.deb`, manual, from source |
-| [docs/deb-install.md](./docs/deb-install.md) | Detailed `.deb` guide including upgrade and removal |
-| [docs/configure.md](./docs/configure.md) | Full `zephyr.toml` configuration reference |
-| [docs/api.md](./docs/api.md) | REST API reference — all endpoints, parameters, curl examples |
-| [docs/consumers.md](./docs/consumers.md) | Building your own dashboard or integration against the engine API |
-| [docs/drivers.md](./docs/drivers.md) | Writing a new ingest driver (push or LAN poller) |
-| [docs/storage-adapters.md](./docs/storage-adapters.md) | Implementing a new storage adapter |
-| [docs/themes.md](./docs/themes.md) | Creating a new UI theme |
-| [docs/ai-assisted-development.md](./docs/ai-assisted-development.md) | AI-first contribution guide — prompt templates, common pitfalls |
+| Document                                                             | Description                                                       |
+| -------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| [docs/install.md](./docs/install.md)                                 | All install methods — one-liner, `.deb`, manual, from source      |
+| [docs/deb-install.md](./docs/deb-install.md)                         | Detailed `.deb` guide including upgrade and removal               |
+| [docs/configure.md](./docs/configure.md)                             | Full `zephyr.toml` configuration reference                        |
+| [docs/api.md](./docs/api.md)                                         | REST API reference — all endpoints, parameters, curl examples     |
+| [docs/consumers.md](./docs/consumers.md)                             | Building your own dashboard or integration against the engine API |
+| [docs/drivers.md](./docs/drivers.md)                                 | Writing a new ingest driver (push or LAN poller)                  |
+| [docs/storage-adapters.md](./docs/storage-adapters.md)               | Implementing a new storage adapter                                |
+| [docs/themes.md](./docs/themes.md)                                   | Creating a new UI theme                                           |
+| [docs/ai-assisted-development.md](./docs/ai-assisted-development.md) | AI-first contribution guide — prompt templates, common pitfalls   |
 
 ---
 

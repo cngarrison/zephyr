@@ -55,11 +55,11 @@ In **production**, all configuration comes from `/etc/zephyr/zephyr.toml` (the `
 
 In **development**, a `.env` file in `web/` can supply overrides (loaded via `@std/dotenv`).
 
-| Variable / TOML key | Default | Description |
-|---|---|---|
-| `[web] engine_url` / `WEB_ENGINE_URL` | `http://localhost:8080` | URL of the engine API (server-side fetches only) |
-| `PORT` | `8081` | Web daemon listen port — set as a process env var (systemd `Environment=`), not in `zephyr.toml` |
-| `HOSTNAME` | `0.0.0.0` | Web daemon bind address |
+| Variable / TOML key                   | Default                 | Description                                                                                      |
+| ------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `[web] engine_url` / `WEB_ENGINE_URL` | `http://localhost:8080` | URL of the engine API (server-side fetches only)                                                 |
+| `PORT`                                | `8081`                  | Web daemon listen port — set as a process env var (systemd `Environment=`), not in `zephyr.toml` |
+| `HOSTNAME`                            | `0.0.0.0`               | Web daemon bind address                                                                          |
 
 **`PORT` is always a process env var**, not a TOML key, because Fresh reads it before user code initialises. In production it is set in the systemd unit file.
 
@@ -78,30 +78,30 @@ See `deploy/etc/zephyr.toml.example` for the full production template.
 
 ### Page routes
 
-| Route | Description |
-|---|---|
-| `/` | Current conditions dashboard — latest observation + live 24-hour raw charts |
-| `/yesterday` | Hourly aggregate charts for the previous calendar day (station timezone) |
-| `/week` | Hourly aggregate charts for the past 7 days |
-| `/month` | Daily aggregate charts for the past 30 days |
-| `/year` | Daily aggregate charts for the past 365 days |
-| `/history` | Multi-year climate heatmaps + all-time records table |
-| `/almanac` | Sunrise/sunset/twilight times + moon phase for any date (date nav via `?date=YYYY-MM-DD`) |
-| `/archive` | ⚠ Partial stub — year/month download grid not yet implemented |
+| Route        | Description                                                                               |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| `/`          | Current conditions dashboard — latest observation + live 24-hour raw charts               |
+| `/yesterday` | Hourly aggregate charts for the previous calendar day (station timezone)                  |
+| `/week`      | Hourly aggregate charts for the past 7 days                                               |
+| `/month`     | Daily aggregate charts for the past 30 days                                               |
+| `/year`      | Daily aggregate charts for the past 365 days                                              |
+| `/history`   | Multi-year climate heatmaps + all-time records table                                      |
+| `/almanac`   | Sunrise/sunset/twilight times + moon phase for any date (date nav via `?date=YYYY-MM-DD`) |
+| `/archive`   | ⚠ Partial stub — year/month download grid not yet implemented                             |
 
 ### API proxy routes
 
 All routes under `routes/api/` proxy requests to the engine. Browser islands fetch from the same origin (`/api/*`); no CORS configuration is needed.
 
-| Route | Proxies to engine |
-|---|---|
-| `GET /api/observations` | `GET /api/observations` |
-| `GET /api/observations/latest` | `GET /api/observations/latest` |
-| `GET /api/observations/range` | `GET /api/observations/range?from=&to=` |
+| Route                             | Proxies to engine                                            |
+| --------------------------------- | ------------------------------------------------------------ |
+| `GET /api/observations`           | `GET /api/observations`                                      |
+| `GET /api/observations/latest`    | `GET /api/observations/latest`                               |
+| `GET /api/observations/range`     | `GET /api/observations/range?from=&to=`                      |
 | `GET /api/observations/aggregate` | `GET /api/observations/aggregate?from=&to=&bucket=hour\|day` |
-| `GET /api/observations/today` | `GET /api/observations/today?tz=` |
-| `GET /api/observations/daily` | `GET /api/observations/daily?year=` |
-| `GET /api/almanac` | `GET /api/almanac?date=YYYY-MM-DD` |
+| `GET /api/observations/today`     | `GET /api/observations/today?tz=`                            |
+| `GET /api/observations/daily`     | `GET /api/observations/daily?year=`                          |
+| `GET /api/almanac`                | `GET /api/almanac?date=YYYY-MM-DD`                           |
 
 ---
 
@@ -200,14 +200,15 @@ Fresh v2 islands are hydrated individually in the browser. To avoid duplicated p
 `useObservationState.ts` exports **module-scoped** Preact Signals:
 
 ```ts
-export const latestObservation: Signal<Observation | null>
-export const todayStats: Signal<TodayStats | null>
-export const lastObservationTime: Signal<string | null>
+export const latestObservation: Signal<Observation | null>;
+export const todayStats: Signal<TodayStats | null>;
+export const lastObservationTime: Signal<string | null>;
 ```
 
 It also exports `startObservationPolling()`, which sets up a 60-second interval fetching `/api/observations/latest` and `/api/observations/today` in parallel. Because the signals are module-scoped (not component-scoped), **`startObservationPolling()` is called exactly once** — inside the `CurrentConditions` island's `useEffect` — and the resulting state is automatically shared with every other island that imports the same signals (e.g. `Header`).
 
 This means adding a new island that reacts to live observation data requires only:
+
 1. Import the signal(s) from `lib/hooks/useObservationState.ts`
 2. Read the signal value inside the component — no additional polling setup needed
 
@@ -221,11 +222,11 @@ Every handler in `routes/api/` is a thin proxy:
 // routes/api/observations/latest.ts
 export const handler: Handlers = {
   async GET(req) {
-    const url = new URL("/api/observations/latest", engineUrl());
+    const url = new URL('/api/observations/latest', engineUrl());
     const res = await fetch(url);
     return new Response(res.body, {
       status: res.status,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   },
 };
@@ -280,7 +281,7 @@ static/weather-icons/
 The stylesheet is loaded via a `<link>` in `routes/_app.tsx`:
 
 ```tsx
-<link rel="stylesheet" href="/weather-icons/weather-icons.min.css" />
+<link rel='stylesheet' href='/weather-icons/weather-icons.min.css' />;
 ```
 
 Usage in components — add the `wi` base class plus a variant:
@@ -302,9 +303,9 @@ A route file exports both a `handler` (for data fetching) and a default page com
 
 ```tsx
 // routes/yesterday.tsx
-import type { Handlers, PageProps } from "$fresh/server.ts";
-import { AggregateView } from "../components/layout/AggregateView.tsx";
-import { fetchAggregates, fetchAlmanac } from "../lib/api.ts";
+import type { Handlers, PageProps } from '$fresh/server.ts';
+import { AggregateView } from '../components/layout/AggregateView.tsx';
+import { fetchAggregates, fetchAlmanac } from '../lib/api.ts';
 
 interface Data {
   observations: AggregateObservation[];
@@ -318,13 +319,13 @@ export const handler: Handlers<Data> = {
     // Use Temporal for timezone-correct midnight boundaries
     const today = Temporal.Now.plainDateISO(tz);
     const yesterday = today.subtract({ days: 1 });
-    const from = yesterday.toZonedDateTime({ timeZone: tz, plainTime: "00:00" })
+    const from = yesterday.toZonedDateTime({ timeZone: tz, plainTime: '00:00' })
       .toInstant().epochSeconds;
-    const to = today.toZonedDateTime({ timeZone: tz, plainTime: "00:00" })
+    const to = today.toZonedDateTime({ timeZone: tz, plainTime: '00:00' })
       .toInstant().epochSeconds;
 
     const [observations, almanac] = await Promise.all([
-      fetchAggregates(from, to, "hour"),
+      fetchAggregates(from, to, 'hour'),
       fetchAlmanac(yesterday.toString()),
     ]);
     return ctx.render({ observations, almanac, station });
@@ -332,7 +333,7 @@ export const handler: Handlers<Data> = {
 };
 
 export default function YesterdayPage({ data }: PageProps<Data>) {
-  return <AggregateView title="Yesterday" {...data} />;
+  return <AggregateView title='Yesterday' {...data} />;
 }
 ```
 
@@ -345,11 +346,11 @@ export default function YesterdayPage({ data }: PageProps<Data>) {
 ### Adding a new island that reads live data
 
 ```tsx
-import { latestObservation } from "../lib/hooks/useObservationState.ts";
+import { latestObservation } from '../lib/hooks/useObservationState.ts';
 
 export default function MyIsland() {
   const obs = latestObservation.value;
-  return <div>{obs ? obs.temperature_c.toFixed(1) : "—"}</div>;
+  return <div>{obs ? obs.temperature_c.toFixed(1) : '—'}</div>;
 }
 ```
 

@@ -1,4 +1,4 @@
-import { parse } from "@std/toml";
+import { parse } from '@std/toml';
 
 // ---------------------------------------------------------------------------
 // Interfaces
@@ -45,7 +45,7 @@ export interface StorageMysqlConfig {
 }
 
 export interface StorageConfig {
-  provider: "sqlite" | "mysql";
+  provider: 'sqlite' | 'mysql';
   sqlite: StorageSqliteConfig;
   mysql?: StorageMysqlConfig;
 }
@@ -72,15 +72,15 @@ export interface Config {
 
 function resolveConfigPath(): string {
   // 1. --config <path> CLI flag
-  const flagIdx = Deno.args.indexOf("--config");
+  const flagIdx = Deno.args.indexOf('--config');
   if (flagIdx !== -1 && Deno.args[flagIdx + 1]) {
     return Deno.args[flagIdx + 1];
   }
   // 2. $ZEPHYR_CONFIG environment variable
-  const envPath = Deno.env.get("ZEPHYR_CONFIG");
+  const envPath = Deno.env.get('ZEPHYR_CONFIG');
   if (envPath) return envPath;
   // 3. Well-known default
-  return "/etc/zephyr/zephyr.toml";
+  return '/etc/zephyr/zephyr.toml';
 }
 
 // ---------------------------------------------------------------------------
@@ -101,12 +101,12 @@ function loadConfig(): Config {
 
   // deno-lint-ignore no-explicit-any
   const stations: StationConfig[] = (t.stations ?? []).map((s: any) => ({
-    id: s.id ?? "default",
-    name: s.name ?? "My Weather Station",
+    id: s.id ?? 'default',
+    name: s.name ?? 'My Weather Station',
     lat: s.lat ?? 0,
     lon: s.lon ?? 0,
     altitude: s.altitude ?? 0,
-    timezone: s.timezone ?? "UTC",
+    timezone: s.timezone ?? 'UTC',
     ingest: {
       push: {
         enabled: s.ingest?.push?.enabled ?? true,
@@ -115,7 +115,7 @@ function loadConfig(): Config {
       },
       poll: {
         enabled: s.ingest?.poll?.enabled ?? false,
-        gwHost: s.ingest?.poll?.gw_host ?? "192.168.1.100",
+        gwHost: s.ingest?.poll?.gw_host ?? '192.168.1.100',
         gwPort: s.ingest?.poll?.gw_port ?? 45000,
         intervalSeconds: s.ingest?.poll?.interval_seconds ?? 60,
       },
@@ -123,28 +123,28 @@ function loadConfig(): Config {
   }));
 
   const storage: StorageConfig = {
-    provider: t.storage?.provider ?? "sqlite",
+    provider: t.storage?.provider ?? 'sqlite',
     sqlite: {
-      path: t.storage?.sqlite?.path ?? "/var/lib/zephyr/zephyr.db",
+      path: t.storage?.sqlite?.path ?? '/var/lib/zephyr/zephyr.db',
     },
   };
   if (t.storage?.mysql) {
     storage.mysql = {
-      host: t.storage.mysql.host ?? "localhost",
+      host: t.storage.mysql.host ?? 'localhost',
       port: t.storage.mysql.port ?? 3306,
-      user: t.storage.mysql.user ?? "",
-      password: t.storage.mysql.password ?? "",
-      database: t.storage.mysql.database ?? "",
+      user: t.storage.mysql.user ?? '',
+      password: t.storage.mysql.password ?? '',
+      database: t.storage.mysql.database ?? '',
     };
   }
 
   return {
     engine: {
       port: t.engine?.port ?? 8080,
-      host: t.engine?.host ?? "0.0.0.0",
+      host: t.engine?.host ?? '0.0.0.0',
     },
     web: {
-      engineUrl: t.web?.engine_url ?? "http://localhost:8080",
+      engineUrl: t.web?.engine_url ?? 'http://localhost:8080',
     },
     storage,
     stations,
@@ -159,7 +159,7 @@ export const config: Config = loadConfig();
 
 export function primaryStation(): StationConfig {
   if (config.stations.length === 0) {
-    throw new Error("No [[stations]] configured in zephyr.toml");
+    throw new Error('No [[stations]] configured in zephyr.toml');
   }
   return config.stations[0];
 }

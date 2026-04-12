@@ -46,12 +46,16 @@ Please:
    and logs `console.info("Ingest [<Name>] ts=... station=... readings=")`.
 3. Wire the handler in engine/main.ts.
 4. Add any required env vars to engine/config.ts.
+5. Write engine/tests/ingest/normalizer-<name>.test.ts following the
+   structure of normalizer-template.test.ts. Cover: timestamp contract,
+   stationId contract, all SI unit conversions, missing fields → undefined,
+   and extended sensor readings.
 
 Do not convert units anywhere except normalizer.ts.
 Do not use the device-reported timestamp.
 ```
 
-**After generation:** confirm the timestamp source is `Date.now()`, not a field from the payload. Confirm all unit conversions are in `normalizer.ts` only. Run `deno check engine/main.ts`.
+**After generation:** confirm the timestamp source is `Date.now()`, not a field from the payload. Confirm all unit conversions are in `normalizer.ts` only. Run `deno check engine/main.ts`. Run `deno task test:engine` and confirm all tests pass.
 
 ---
 
@@ -76,12 +80,16 @@ Please:
    - Call `normalize<Name>()`, then `storage.insert()` / `storage.insertReadings()`.
 3. Wire the poller in engine/main.ts.
 4. Add config fields to engine/config.ts.
+5. Write engine/tests/ingest/normalizer-<name>.test.ts following the
+   structure of normalizer-template.test.ts. Cover: timestamp contract,
+   stationId contract, all SI unit conversions, missing fields → undefined,
+   and extended sensor readings.
 
 The response format I pasted above is authoritative — parse it exactly.
 Use `Math.floor(Date.now() / 1000)` for the timestamp.
 ```
 
-**After generation:** verify the device response is parsed from the actual format you provided, not a guessed schema. Confirm poll interval comes from config. Run `deno check engine/main.ts`.
+**After generation:** verify the device response is parsed from the actual format you provided, not a guessed schema. Confirm poll interval comes from config. Run `deno check engine/main.ts`. Run `deno task test:engine` and confirm all tests pass.
 
 ---
 
@@ -106,9 +114,11 @@ Then register a `case "<name>":` branch in factory.ts.
 
 Mirror the SQLite provider's migration pattern exactly.
 Never import the provider from outside engine/src/storage/.
+Also run the existing adapter-contract.test.ts suite against the new
+provider to confirm all storage contract tests pass.
 ```
 
-**After generation:** check every method of `StorageAdapter` is implemented (no stubs that throw). Verify the migration runner is called on startup. Run `deno check engine/main.ts`.
+**After generation:** check every method of `StorageAdapter` is implemented (no stubs that throw). Verify the migration runner is called on startup. Run `deno check engine/main.ts`. Run `deno task test:engine` and confirm the contract suite passes against your new provider.
 
 ---
 
@@ -133,9 +143,13 @@ Please:
    create new module-level signals.
 6. Use CSS var utility classes and var(--color-*) variables for all colours.
    Do not hardcode Tailwind colour classes for theme colours.
+7. Write web/tests/components/<name>.test.tsx (or web/tests/routes/<name>.test.ts)
+   using mockEngineAPI() from web/tests/lib/mock-fetch.ts to stub the engine.
+   Test: successful render with mocked data, graceful null/empty handling,
+   correct date range if Temporal is used.
 ```
 
-**After generation:** confirm `Promise.all` is used for parallel fetches. Confirm `Temporal` is used for any date math, not `new Date()`. Run `deno check web/main.ts`.
+**After generation:** confirm `Promise.all` is used for parallel fetches. Confirm `Temporal` is used for any date math, not `new Date()`. Run `deno check web/main.ts`. Run `deno task test:web` and confirm all tests pass.
 
 ---
 
@@ -165,6 +179,126 @@ Please:
 
 ---
 
+## Writing Tests
+
+### Test Directory Structure
+
+```
+engine/tests/
+  domain/          # Pure function tests (units, calculations)
+  storage/         # StorageAdapter contract + provider tests
+  ingest/          # Normalizer tests (one file per protocol)
+  api/             # HTTP router tests
+  almanac/         # Almanac calculation tests
+  fixtures/        # JSON test payloads (wu-payload.json, ecowitt-payload.json, etc.)
+
+web/tests/
+  lib/             # test-env.ts (DOM setup), mock-fetch.ts (API mocking)
+  hooks/           # useObservationState.test.ts
+  components/      # SSR component render tests
+  islands/         # Island interaction tests
+
+shared/testing/
+  fixtures.ts      # Factory functions: makeObservation, makeWuPayload, etc.
+```
+
+### Using Fixture Factories
+
+All tests import from `@zephyr/shared/testing`:
+
+```typescript
+import { makeObservation, makeWuPayload, makeTodayStats } from '@zephyr/shared/testing';
+
+// All factories accept overrides:
+const obs = makeObservation({ tempOutdoor: 22.5, windSpeed: 3.0 });
+const payload = makeWuPayload({ tempf: '72.5', windspeedmph: '0' });
+const stats = makeTodayStats({ temp_min: 10.0, temp_max: 25.0 });
+```
+
+Available factories: `makeObservation`, `makeSensorReading`, `makeWuPayload`, `makeEcowittPayload`, `makeAggregateObservation`, `makeDailyAggregate`, `makeTodayStats`.
+
+### Using MockStorageAdapter
+
+For tests that need a `StorageAdapter` without a real database:
+
+```typescript
+import { createMockAdapter } from '../../tests/storage/mock-adapter.ts';
+
+const adapter = createMockAdapter();
+await adapter.init();
+await adapter.insert(makeObservation());
+
+// Inspect call tracking:
+console.log(adapter.calls.insert);   // all inserted observations
+console.log(adapter.calls.latest);   // number of times latest() was called
+console.log(adapter.observations);   // current in-memory store
+
+adapter.reset(); // clear all state and call tracking between tests
+```
+
+### Using mockEngineAPI (web tests)
+
+For web tests that call `fetch` to the engine:
+
+```typescript
+import { mockEngineAPI, restoreFetch } from '../../lib/mock-fetch.ts';
+import { makeObservation } from '@zephyr/shared/testing';
+
+Deno.test('my web test', async (t) => {
+  mockEngineAPI({ observation: { tempOutdoor: 19.0 } });
+  try {
+    // ... test code that calls fetch('/api/observations/latest')
+  } finally {
+    restoreFetch();
+  }
+});
+```
+
+### Using test-env.ts (DOM setup for island tests)
+
+For islands that access browser APIs (localStorage, matchMedia, `document.documentElement`), set up the happy-dom environment before rendering:
+
+```typescript
+import { setupTestEnvironment, cleanupTestEnvironment } from '../lib/test-env.ts';
+import { renderToString } from 'preact-render-to-string';
+import MyIsland from '../../islands/MyIsland.tsx';
+
+Deno.test('MyIsland', async (t) => {
+  setupTestEnvironment();
+  try {
+    await t.step('renders initial state', () => {
+      const html = renderToString(<MyIsland />);
+      assertStringIncludes(html, 'expected content');
+    });
+    await t.step('writes to localStorage', () => {
+      // globalThis.localStorage is available after setupTestEnvironment()
+      assertEquals(localStorage.getItem('my-key'), 'expected');
+    });
+  } finally {
+    cleanupTestEnvironment();
+  }
+});
+```
+
+**Use DOM setup when:** the island reads/writes `localStorage`, calls `matchMedia`, or manipulates `document.documentElement.classList`.
+**Skip DOM setup when:** you only need to verify SSR output shape — `renderToString` works without it and is faster.
+
+> **Path note:** All imports are relative to the test file's location. From `web/tests/islands/` use `'../lib/test-env.ts'`; from `web/tests/components/conditions/` use `'../../../lib/test-env.ts'`. The same rule applies to `mock-fetch.ts`.
+
+---
+
+### The Normalizer Template
+
+`engine/tests/ingest/normalizer-template.test.ts` is an exhaustive teaching document for new ingest driver tests. It covers all three non-negotiable contracts:
+
+1. **Timestamp contract** — must use `Math.floor(Date.now() / 1000)`, never the device-reported field
+2. **SI unit contract** — all temperatures in °C, wind in m/s, rain in mm, pressure in hPa
+3. **Missing field contract** — absent or empty fields produce `undefined`, not `NaN` or `0`
+
+Copy this file and adapt it for every new protocol. The test names and structure are intentionally verbose — they serve as documentation for future contributors.
+
+---
+
 ## Working Iteratively
 
 - **Start with the normalizer/domain type, not the handler.** Get `normalize<Name>()` compiling and returning the right shape before wiring up HTTP or polling logic.
@@ -179,6 +313,7 @@ Please:
 Run all of these before opening a PR:
 
 ```bash
+deno task test:all          # all tests must pass
 deno check engine/main.ts   # type-check engine
 deno check web/main.ts      # type-check web
 deno lint                   # lint all
@@ -186,7 +321,7 @@ deno fmt                    # format all
 deno task dev               # smoke test — confirm it starts without errors
 ```
 
-All five must pass cleanly.
+All six must pass cleanly.
 
 ---
 

@@ -1,0 +1,28 @@
+{
+  "name": "@zephyr/shared",
+  "version": "0.1.0",
+  "exports": {
+    ".": "./types.ts",
+    "./testing": "./testing/fixtures.ts"
+  },
+  "tasks": {
+    "format": "deno fmt"
+  },
+  "compilerOptions": {
+    "strict": true
+  }
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": [
+      "tests/"
+    ],
+    "exclude": [
+      "data/*"
+    ]
+  }
+}

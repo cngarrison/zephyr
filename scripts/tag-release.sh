@@ -22,7 +22,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 VERSION_FILE="$REPO_ROOT/version.ts"
 
-# ── helpers ────────────────────────────────────────────────────────────────────
+# ── helpers ──────────────────────────────────────────────────────────────────
 
 die()  { echo "error: $*" >&2; exit 1; }
 info() { echo "  $*"; }
@@ -50,9 +50,44 @@ validate_version() {
     || die "Invalid version '${v}'. Expected X.Y.Z or X.Y.Z-suffix (e.g. 1.2.3-rc.1)"
 }
 
-# ── main ──────────────────────────────────────────────────────────────────────
+# ── pre-flight: stash any uncommitted changes before touching branches ────────
 
 cd "$REPO_ROOT"
+STASHED=false
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  info "Uncommitted changes detected — stashing..."
+  git stash push -m "tag-release: auto-stash" || die "Could not stash changes."
+  STASHED=true
+fi
+
+# ── branch guard ──────────────────────────────────────────────────────────────
+
+ORIGINAL_BRANCH="$(git -C "$REPO_ROOT" branch --show-current)"
+[[ -z "$ORIGINAL_BRANCH" ]] && die "Detached HEAD detected. Check out a branch first."
+
+# Return to original branch (and restore stash if created) on exit — success,
+# error, or Ctrl-C.
+cleanup() {
+  git -C "$REPO_ROOT" checkout "$ORIGINAL_BRANCH" 2>/dev/null
+  echo "  Returned to branch: ${ORIGINAL_BRANCH}"
+  if [[ "$STASHED" == "true" ]]; then
+    git -C "$REPO_ROOT" stash pop \
+      && info "Restored stashed changes." \
+      || echo "  warning: stash pop failed — run 'git stash pop' manually"
+  fi
+}
+trap cleanup EXIT
+
+if [[ "$ORIGINAL_BRANCH" != "main" ]]; then
+  info "Currently on '${ORIGINAL_BRANCH}'. Switching to 'main'..."
+  git -C "$REPO_ROOT" checkout main || die "Could not switch to 'main'."
+fi
+
+info "Pulling latest 'main' from origin..."
+git -C "$REPO_ROOT" pull origin main || die "'git pull origin main' failed. Resolve issues and retry."
+echo ""
+
+# ── main ──────────────────────────────────────────────────────────────────────
 
 CURRENT=$(current_version)
 echo ""
@@ -91,11 +126,6 @@ read -rp "Continue? [y/N] " confirm
 [[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 0; }
 echo ""
 
-# Guard: working tree must be clean
-if ! git diff --quiet || ! git diff --cached --quiet; then
-  die "Working tree has uncommitted changes. Commit or stash them first."
-fi
-
 # Guard: tag must not already exist
 if git rev-parse "$TAG" > /dev/null 2>&1; then
   die "Tag ${TAG} already exists. Delete it first: git tag -d ${TAG}"
@@ -104,7 +134,7 @@ fi
 # ── Update version.ts ────────────────────────────────────────────────────────
 # sed -i works differently on macOS vs Linux; use a temp file to be safe.
 TMP="$(mktemp)"
-sed "s/export const VERSION = \"[^\"]*\"/export const VERSION = \"${NEW_VERSION}\"/" \
+sed "s/export const VERSION = \'[^\']*\'/export const VERSION = \'${NEW_VERSION}\'/" \
   "$VERSION_FILE" > "$TMP"
 mv "$TMP" "$VERSION_FILE"
 info "Updated $VERSION_FILE  →  ${NEW_VERSION}"

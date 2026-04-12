@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ── Light mode defaults ──────────────────────────────────────────────────── */
 :root {
@@ -33,6 +33,8 @@
   --color-muted: #94a3b8;
   --color-accent: #38bdf8;
 }
+
+@variant dark (&:where(.dark, .dark *));
 
 /* ── Utility classes ──────────────────────────────────────────────────────── */
 .card {

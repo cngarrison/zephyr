@@ -16,9 +16,9 @@
 #   cp dist/zephyr-web-linux-amd64    dist/deb-staging/zephyr-web
 
 name: zephyr
-arch: "${NFPM_ARCH}"
+arch: '${NFPM_ARCH}'
 platform: linux
-version: "${NFPM_VERSION}"
+version: '${NFPM_VERSION}'
 section: utils
 priority: optional
 
@@ -59,7 +59,7 @@ contents:
   - dst: /etc/zephyr
     type: dir
     file_info:
-      mode: 0755  # postinst tightens this to 0750
+      mode: 0755 # postinst tightens this to 0750
 
   # Example TOML config — marked noreplace so operator edits survive upgrades.
   - src: deploy/etc/zephyr.toml.example
@@ -70,5 +70,5 @@ contents:
 
 scripts:
   postinstall: deploy/scripts/postinst
-  preremove:   deploy/scripts/prerm
-  postremove:  deploy/scripts/postrm
+  preremove: deploy/scripts/prerm
+  postremove: deploy/scripts/postrm

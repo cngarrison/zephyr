@@ -26,6 +26,4 @@ import app from './_fresh/server.js';
 const port = parseInt(Deno.env.get('PORT') ?? Deno.env.get('WEB_PORT') ?? '8081', 10);
 
 console.log(`Zephyr Web → http://localhost:${port}/`);
-Deno.serve({ port }, (req: Request) =>
-  (app as { fetch(r: Request): Promise<Response> }).fetch(req),
-);
+Deno.serve({ port }, (req: Request) => (app as { fetch(r: Request): Promise<Response> }).fetch(req));

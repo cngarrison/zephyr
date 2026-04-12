@@ -1,5 +1,12 @@
-import type { AlmanacData, AggregateObservation, DailyAggregate, Observation, StationConfig, TodayStats } from "./types.ts";
-import { config } from "./config.ts";
+import type {
+  AggregateObservation,
+  AlmanacData,
+  DailyAggregate,
+  Observation,
+  StationConfig,
+  TodayStats,
+} from './types.ts';
+import { config } from './config.ts';
 
 // Engine base URL — server-side only. Islands use the /api proxy route.
 // Resolved lazily (function, not module-level const) to ensure the TOML config
@@ -17,11 +24,11 @@ export async function fetchStationConfig(): Promise<StationConfig> {
     return data.station;
   } catch {
     return {
-      name: "My Weather Station",
+      name: 'My Weather Station',
       lat: 0,
       lon: 0,
       altitude: 0,
-      timezone: "UTC",
+      timezone: 'UTC',
       extras: [],
     };
   }
@@ -55,7 +62,7 @@ export async function fetchAggregates(
     if (!resp.ok) return [];
     return await resp.json() as AggregateObservation[];
   } catch (err) {
-    console.error("fetchAggregates error:", err);
+    console.error('fetchAggregates error:', err);
     return [];
   }
 }
@@ -63,12 +70,12 @@ export async function fetchAggregates(
 export async function fetchDailyAggregates(year?: number): Promise<DailyAggregate[]> {
   try {
     const qs = new URLSearchParams();
-    if (year !== undefined) qs.set("year", String(year));
+    if (year !== undefined) qs.set('year', String(year));
     const resp = await fetch(`${engineUrl()}/api/observations/daily?${qs}`);
     if (!resp.ok) return [];
     return await resp.json() as DailyAggregate[];
   } catch (err) {
-    console.error("fetchDailyAggregates error:", err);
+    console.error('fetchDailyAggregates error:', err);
     return [];
   }
 }
@@ -79,7 +86,7 @@ export async function fetchTodayStats(): Promise<TodayStats | null> {
     if (!resp.ok) return null;
     return await resp.json() as TodayStats;
   } catch (err) {
-    console.error("fetchTodayStats error:", err);
+    console.error('fetchTodayStats error:', err);
     return null;
   }
 }
@@ -90,7 +97,7 @@ export async function fetchAlmanac(date?: string): Promise<AlmanacData | null> {
     if (date) qs.set('date', date);
     const resp = await fetch(`${engineUrl()}/api/almanac?${qs}`);
     if (!resp.ok) return null;
-    const data = await resp.json() as AlmanacData
+    const data = await resp.json() as AlmanacData;
     //console.log('API: fetchAlmanac:', data);
     return data;
   } catch (err) {
@@ -104,10 +111,10 @@ export async function fetchObservations(
 ): Promise<Observation[]> {
   try {
     const qs = new URLSearchParams();
-    if (params.from !== undefined) qs.set("from", String(params.from));
-    if (params.to !== undefined) qs.set("to", String(params.to));
-    if (params.limit !== undefined) qs.set("limit", String(params.limit));
-    if (params.offset !== undefined) qs.set("offset", String(params.offset));
+    if (params.from !== undefined) qs.set('from', String(params.from));
+    if (params.to !== undefined) qs.set('to', String(params.to));
+    if (params.limit !== undefined) qs.set('limit', String(params.limit));
+    if (params.offset !== undefined) qs.set('offset', String(params.offset));
 
     const resp = await fetch(`${engineUrl()}/api/observations?${qs}`);
     if (!resp.ok) return [];

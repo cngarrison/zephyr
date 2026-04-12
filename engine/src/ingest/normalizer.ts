@@ -1,4 +1,4 @@
-import type { Observation } from "../domain/observation.ts";
+import type { Observation } from '../domain/observation.ts';
 
 /**
  * Magnus formula dew point calculation.
@@ -11,8 +11,8 @@ function calcDewpoint(tempC: number, rhPct: number): number {
   const gamma = Math.log(rhPct / 100) + (a * tempC) / (b + tempC);
   return (b * gamma) / (a - gamma);
 }
-import type { SensorReading } from "../storage/adapter.ts";
-import { Units } from "../domain/units.ts";
+import type { SensorReading } from '../storage/adapter.ts';
+import { Units } from '../domain/units.ts';
 
 export interface NormalizedData {
   observation: Observation;
@@ -40,8 +40,8 @@ export interface WuParams {
   solarradiation?: string;
   UV?: string;
   dateutc?: string;
-  dewptf?: string;          // dew point °F (some stations provide directly)
-  vpd?: string;             // vapour pressure deficit kPa
+  dewptf?: string; // dew point °F (some stations provide directly)
+  vpd?: string; // vapour pressure deficit kPa
   [key: string]: string | undefined;
 }
 
@@ -56,7 +56,7 @@ export function normalizeWu(params: WuParams, defaultStationId: string): Normali
 
   const n = (key: string, convert?: (v: number) => number): number | undefined => {
     const raw = params[key];
-    if (raw === undefined || raw === "") return undefined;
+    if (raw === undefined || raw === '') return undefined;
     const num = parseFloat(raw);
     if (isNaN(num)) return undefined;
     return convert ? convert(num) : num;
@@ -64,35 +64,34 @@ export function normalizeWu(params: WuParams, defaultStationId: string): Normali
 
   // Dew point: use station-provided value if available, otherwise calculate
   // from temperature + humidity via the Magnus formula.
-  const _tempC = n("tempf", Units.fToC);
-  const _rh    = n("humidity");
-  const tempDewpoint =
-    n("dewptf", Units.fToC) ??
+  const _tempC = n('tempf', Units.fToC);
+  const _rh = n('humidity');
+  const tempDewpoint = n('dewptf', Units.fToC) ??
     (_tempC !== undefined && _rh !== undefined ? calcDewpoint(_tempC, _rh) : undefined);
 
   const observation: Observation = {
     timestamp: ts,
     stationId,
-    tempOutdoor:      _tempC,
-    tempIndoor:       n("tempinf", Units.fToC),
+    tempOutdoor: _tempC,
+    tempIndoor: n('tempinf', Units.fToC),
     tempDewpoint,
-    humidityOutdoor:  n("humidity"),
-    humidityIndoor:   n("humidityin"),
-    vpd:              n("vpd"),
-    pressureAbsolute: n("baromin", Units.inHgToHpa),
-    pressureRelative: n("baromrelin", Units.inHgToHpa),
-    windDirection:    n("winddir"),
-    windSpeed:        n("windspeedmph", Units.mphToMs),
-    windGust:         n("windgustmph", Units.mphToMs),
+    humidityOutdoor: n('humidity'),
+    humidityIndoor: n('humidityin'),
+    vpd: n('vpd'),
+    pressureAbsolute: n('baromin', Units.inHgToHpa),
+    pressureRelative: n('baromrelin', Units.inHgToHpa),
+    windDirection: n('winddir'),
+    windSpeed: n('windspeedmph', Units.mphToMs),
+    windGust: n('windgustmph', Units.mphToMs),
     // Piezo rain gauge preferred; fall back to standard tipping-bucket fields.
-    rainRate:    n("rrain_piezo",  Units.inHrToMmHr) ?? n("rainratein",   Units.inHrToMmHr),
-    rainDaily:   n("drain_piezo",  Units.inToMm)     ?? n("dailyrainin",   Units.inToMm),
-    rainWeekly:  n("wrain_piezo",  Units.inToMm)     ?? n("weeklyrainin",  Units.inToMm),
-    rainMonthly: n("mrain_piezo",  Units.inToMm)     ?? n("monthlyrainin", Units.inToMm),
-    rainYearly:  n("yrain_piezo",  Units.inToMm)     ?? n("yearlyrainin",  Units.inToMm),
-    rainEvent:   n("erain_piezo",  Units.inToMm)     ?? n("eventrainin",   Units.inToMm),
-    solarRadiation: n("solarradiation"),
-    uvIndex:        n("UV"),
+    rainRate: n('rrain_piezo', Units.inHrToMmHr) ?? n('rainratein', Units.inHrToMmHr),
+    rainDaily: n('drain_piezo', Units.inToMm) ?? n('dailyrainin', Units.inToMm),
+    rainWeekly: n('wrain_piezo', Units.inToMm) ?? n('weeklyrainin', Units.inToMm),
+    rainMonthly: n('mrain_piezo', Units.inToMm) ?? n('monthlyrainin', Units.inToMm),
+    rainYearly: n('yrain_piezo', Units.inToMm) ?? n('yearlyrainin', Units.inToMm),
+    rainEvent: n('erain_piezo', Units.inToMm) ?? n('eventrainin', Units.inToMm),
+    solarRadiation: n('solarradiation'),
+    uvIndex: n('UV'),
   };
 
   const readings: SensorReading[] = [];
@@ -118,22 +117,22 @@ export function normalizeWu(params: WuParams, defaultStationId: string): Normali
   }
 
   // Lightning (GW1000 WHTF01 sensor)
-  r("lightning.count", n("lightning_num"));
-  r("lightning.distance_km", n("lightning"));
+  r('lightning.count', n('lightning_num'));
+  r('lightning.distance_km', n('lightning'));
 
   // Wind extras
-  r("wind.dir_avg10m",      n("winddir_avg10m"));
-  r("wind.gust_daily_max",  n("maxdailygust", Units.mphToMs));
+  r('wind.dir_avg10m', n('winddir_avg10m'));
+  r('wind.gust_daily_max', n('maxdailygust', Units.mphToMs));
 
   // Rain extras (standard accumulations not in primary observation)
-  r("rain.hourly",   n("hourlyrainin",   Units.inToMm));
-  r("rain.last24h",  n("last24hrainin",  Units.inToMm));
-  r("rain.total",    n("totalrainin",    Units.inToMm));
+  r('rain.hourly', n('hourlyrainin', Units.inToMm));
+  r('rain.last24h', n('last24hrainin', Units.inToMm));
+  r('rain.total', n('totalrainin', Units.inToMm));
 
   // Battery / power health
-  r("battery.sensor1",   n("batt1"));
-  r("battery.wh90",      n("wh90batt"));
-  r("battery.ws90cap_v", n("ws90cap_volt"));
+  r('battery.sensor1', n('batt1'));
+  r('battery.wh90', n('wh90batt'));
+  r('battery.ws90cap_v', n('ws90cap_volt'));
 
   return { observation, readings };
 }

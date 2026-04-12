@@ -8,7 +8,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write   # required to create GitHub Releases
+  contents: write # required to create GitHub Releases
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      version:    ${{ steps.version.outputs.version }}
+      version: ${{ steps.version.outputs.version }}
       prerelease: ${{ steps.version.outputs.prerelease }}
 
     steps:
@@ -201,8 +201,8 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name:               ${{ github.ref_name }}
-          name:                   "Zephyr ${{ github.ref_name }}"
+          tag_name: ${{ github.ref_name }}
+          name: 'Zephyr ${{ github.ref_name }}'
           generate_release_notes: true
-          prerelease:             ${{ needs.build.outputs.prerelease }}
-          files:                  release/*
+          prerelease: ${{ needs.build.outputs.prerelease }}
+          files: release/*

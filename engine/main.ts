@@ -1,10 +1,10 @@
-import { config, primaryStation } from "./config.ts";
-import { createStorageAdapter } from "./src/storage/factory.ts";
-import { createIngestHandler } from "./src/ingest/push.ts";
-import { startPoller } from "./src/ingest/poller.ts";
-import { createApiRouter } from "./src/api/router.ts";
+import { config, primaryStation } from './config.ts';
+import { createStorageAdapter } from './src/storage/factory.ts';
+import { createIngestHandler } from './src/ingest/push.ts';
+import { startPoller } from './src/ingest/poller.ts';
+import { createApiRouter } from './src/api/router.ts';
 
-console.info("Starting Zephyr engine...");
+console.info('Starting Zephyr engine...');
 
 const storage = await createStorageAdapter();
 await storage.init();
@@ -23,13 +23,13 @@ Deno.serve({
   handler: async (req: Request): Promise<Response> => {
     const url = new URL(req.url);
 
-    if (url.pathname.startsWith("/ingest") && station.ingest.push.enabled) {
+    if (url.pathname.startsWith('/ingest') && station.ingest.push.enabled) {
       return await ingestHandler(req);
     }
-    if (url.pathname.startsWith("/api")) {
+    if (url.pathname.startsWith('/api')) {
       return await apiRouter(req);
     }
-    return new Response("Zephyr Engine", { status: 200 });
+    return new Response('Zephyr Engine', { status: 200 });
   },
   onListen: ({ hostname, port }) => {
     console.info(`Engine listening on http://${hostname}:${port}`);

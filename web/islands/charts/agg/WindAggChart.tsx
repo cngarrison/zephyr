@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "preact/hooks";
-import * as echarts from "echarts";
-import type { AggregateObservation } from "@/lib/types.ts";
+import { useEffect, useRef, useState } from 'preact/hooks';
+import * as echarts from 'echarts';
+import type { AggregateObservation } from '@/lib/types.ts';
 
 interface Props {
   from: string;
@@ -16,11 +16,11 @@ export default function WindAggChart({ from, to, bucket }: Props) {
   useEffect(() => {
     if (!divRef.current) return;
 
-    const dark = document.documentElement.classList.contains("dark");
-    const chart = echarts.init(divRef.current, dark ? "dark" : undefined);
+    const dark = document.documentElement.classList.contains('dark');
+    const chart = echarts.init(divRef.current, dark ? 'dark' : undefined);
 
     const handleResize = () => chart.resize();
-    globalThis.addEventListener("resize", handleResize);
+    globalThis.addEventListener('resize', handleResize);
 
     const qs = new URLSearchParams({ from, to, bucket });
     fetch(`/api/observations/aggregate?${qs}`)
@@ -34,29 +34,29 @@ export default function WindAggChart({ from, to, bucket }: Props) {
           .map((a) => [new Date(a.bucket).getTime(), a.wind_gust_ms_max]);
 
         chart.setOption({
-          backgroundColor: "transparent",
+          backgroundColor: 'transparent',
           grid: { top: 8, right: 8, bottom: 24, left: 48, containLabel: false },
-          tooltip: { trigger: "axis", axisPointer: { type: "cross" } },
-          xAxis: { type: "time", axisLabel: { fontSize: 11 } },
-          yAxis: { name: "m/s", nameLocation: "end" },
+          tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+          xAxis: { type: 'time', axisLabel: { fontSize: 11 } },
+          yAxis: { name: 'm/s', nameLocation: 'end' },
           series: [
             {
-              name: "Avg Wind",
-              type: "line",
+              name: 'Avg Wind',
+              type: 'line',
               smooth: true,
               data: avgData,
-              itemStyle: { color: "#fb923c" },
-              lineStyle: { color: "#fb923c" },
-              areaStyle: { color: "#fb923c", opacity: 0.1 },
+              itemStyle: { color: '#fb923c' },
+              lineStyle: { color: '#fb923c' },
+              areaStyle: { color: '#fb923c', opacity: 0.1 },
               showSymbol: false,
             },
             {
-              name: "Max Gust",
-              type: "line",
+              name: 'Max Gust',
+              type: 'line',
               smooth: true,
               data: gustData,
-              itemStyle: { color: "#f87171" },
-              lineStyle: { color: "#f87171", type: "dashed" },
+              itemStyle: { color: '#f87171' },
+              lineStyle: { color: '#f87171', type: 'dashed' },
               showSymbol: false,
             },
           ],
@@ -69,24 +69,24 @@ export default function WindAggChart({ from, to, bucket }: Props) {
       });
 
     return () => {
-      globalThis.removeEventListener("resize", handleResize);
+      globalThis.removeEventListener('resize', handleResize);
       chart.dispose();
     };
   }, [from, to, bucket]);
 
   return (
-    <div style="position: relative; height: 220px;">
+    <div style='position: relative; height: 220px;'>
       {loading && !error && (
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;">
+        <div style='position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;'>
           Loading...
         </div>
       )}
       {error && (
-        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;">
+        <div style='position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--color-muted); font-size: 13px;'>
           No data
         </div>
       )}
-      <div ref={divRef} style="width: 100%; height: 220px;" />
+      <div ref={divRef} style='width: 100%; height: 220px;' />
     </div>
   );
 }

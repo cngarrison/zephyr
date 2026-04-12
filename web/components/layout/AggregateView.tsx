@@ -26,10 +26,10 @@ export default function AggregateView(
       </Head>
       <Header stationName={stationName} initialTime={initialTime} timezone={timezone} almanac={almanac} />
       <NavTabs current={pathname} />
-      <main class="max-w-5xl mx-auto px-4 py-8">
+      <main class='max-w-5xl mx-auto px-4 py-8'>
         <h2
-          class="text-xl font-semibold mb-4"
-          style="color: var(--color-text);"
+          class='text-xl font-semibold mb-4'
+          style='color: var(--color-text);'
         >
           {title}
         </h2>

@@ -1,4 +1,4 @@
-import type { Pool } from "mysql2/promise";
+import type { Pool } from 'mysql2/promise';
 
 export async function up(pool: Pool): Promise<void> {
   await pool.query(`

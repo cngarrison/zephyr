@@ -1,0 +1,11 @@
+#!/bin/sh
+# Sync beads issue database to remote before pushing source code.
+# bd dolt push uses Dolt's own remote protocol (refs/dolt/data) —
+# separate from git refs, so this never interferes with the git push itself.
+
+if command -v bd >/dev/null 2>&1; then
+  echo "[beads] Syncing issue database..."
+  bd dolt push 2>&1 || echo "[beads] Warning: bd dolt push failed (continuing git push)"
+fi
+
+exit 0

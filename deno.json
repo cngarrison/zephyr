@@ -1,5 +1,5 @@
 {
-  "workspace": ["./engine", "./web"],
+  "workspace": ["./engine", "./web", "./shared"],
   "nodeModulesDir": "auto",
   "tasks": {
     "dev": "deno task --cwd engine dev & deno task --cwd web dev",
@@ -13,12 +13,28 @@
     "check:types:all": "deno task --cwd web check:types && deno task --cwd engine check:types",
     "check:types:engine": "deno task --cwd engine check:types",
     "check:types:web": "deno task --cwd web check:types",
-	"format": "deno task --cwd engine format && deno task --cwd web format",
+    "format": "deno fmt",
+    "format:projects": "deno task --cwd engine format && deno task --cwd web format && deno task --cwd shared format",
     "migrate": "deno task --cwd engine migrate",
     "dedup": "deno task --cwd engine dedup",
+    "test:engine": "deno task --cwd engine test",
+    "test:web": "deno task --cwd web test",
+    "test:all": "deno test --allow-read --allow-write --allow-env --allow-net engine/tests/ web/tests/",
 
     "compile:engine": "mkdir -p dist && deno compile --allow-net --allow-env --allow-read=.env --allow-read=./data,/var/lib/zephyr,/etc/zephyr --allow-write=./data,/var/lib/zephyr --output dist/zephyr-engine engine/main.ts",
     "compile:web": "deno task build && mkdir -p dist && cd web && deno compile --allow-net --allow-env --allow-read=.env --include _fresh --include static --output ../dist/zephyr-web _fresh/compiled-entry.js",
     "compile": "deno task compile:engine && deno task compile:web"
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 120,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "exclude": [
+      "assets/*",
+      "docs/*"
+    ]
   }
 }

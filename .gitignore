@@ -65,3 +65,6 @@ engine/data
 # BB files
 .bb
 .trash
+
+# Extra
+notes/
