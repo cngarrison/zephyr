@@ -54,3 +54,8 @@
 # - github.repo
 
 no-git-ops: true
+
+dolt.shared-server: true
+dolt.auto-start: true
+
+sync.remote: "git+ssh://git@github.com/cngarrison/zephyr.git"
