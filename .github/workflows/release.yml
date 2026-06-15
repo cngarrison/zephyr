@@ -79,7 +79,7 @@ jobs:
       # Flags mirror the local `compile:web` task.
       - name: Compile web (all targets)
         run: |
-          WEB_FLAGS="--allow-net --allow-env --allow-read=.env"
+          WEB_FLAGS="--allow-net --allow-env --allow-read"
 
           for target in \
             x86_64-unknown-linux-gnu \
