@@ -48,12 +48,13 @@ function loadConfig(): Config {
   let raw: string;
   try {
     raw = Deno.readTextFileSync(configPath);
-  } catch {
+  } catch (e) {
     // In development the production path won't exist; fall back to defaults
     // so the web server can start without a config file present.
     console.warn(
       `[zephyr/web] Config file not found at ${configPath}; using defaults. ` +
         `Set ZEPHYR_CONFIG or pass --config <path> to override.`,
+      e,
     );
     return {
       web: { engineUrl: 'http://localhost:8080' },
