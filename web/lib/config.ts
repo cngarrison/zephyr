@@ -54,7 +54,7 @@ function loadConfig(): Config {
     console.warn(
       `[zephyr/web] Config file not found at ${configPath}; using defaults. ` +
         `Set ZEPHYR_CONFIG or pass --config <path> to override.`,
-        e,
+      e,
     );
     return {
       web: { engineUrl: 'http://localhost:8080' },
