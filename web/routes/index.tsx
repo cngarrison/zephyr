@@ -48,7 +48,7 @@ export default define.page(function Home({ data }: { data: PageData }) {
       </Head>
       <Header
         stationName={station.name}
-        initialTime={new Date().toISOString()}
+        initialTime={Temporal.Now.instant().toString()}
         timezone={station.timezone}
         almanac={almanac}
       />

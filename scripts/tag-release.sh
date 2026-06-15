@@ -163,3 +163,5 @@ else
   echo "  git push && git push origin ${TAG}"
   echo ""
 fi
+
+info "Remember to merge `main` branch into `dev` or feature branch."

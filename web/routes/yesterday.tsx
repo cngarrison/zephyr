@@ -43,5 +43,5 @@ export const handler = define.handlers<PageData>({
 });
 
 export default define.page(function YesterdayPage({ data }: { data: PageData }) {
-  return <AggregateView {...data} title='Yesterday' />;
+  return <AggregateView {...data} title='Yesterday' initialTime={data.serverTime} />;
 });

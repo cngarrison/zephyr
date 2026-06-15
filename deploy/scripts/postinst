@@ -23,9 +23,16 @@ case "$1" in
     fi
 
     # ── 2. Data directory ───────────────────────────────────────────────────────
-    mkdir -p /var/lib/zephyr
-    chown zephyr:zephyr /var/lib/zephyr
-    chmod 0750 /var/lib/zephyr
+    # If /var/lib/zephyr is already a symlink the operator has deliberately
+    # redirected data storage (e.g. to a NAS mount).  We leave it alone —
+    # chown/chmod would fail on most NFS exports anyway.
+    if [ -L /var/lib/zephyr ]; then
+      echo "Zephyr: /var/lib/zephyr is a symlink — skipping chown/chmod."
+    else
+      mkdir -p /var/lib/zephyr
+      chown zephyr:zephyr /var/lib/zephyr
+      chmod 0750 /var/lib/zephyr
+    fi
 
     # ── 3. Config directory ─────────────────────────────────────────────────────
     # Lock down /etc/zephyr so only root and the zephyr group can read it.

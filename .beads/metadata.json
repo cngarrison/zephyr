@@ -1,7 +1,8 @@
 {
   "database": "dolt",
   "backend": "dolt",
-  "dolt_mode": "embedded",
+  "dolt_mode": "server",
   "dolt_database": "zephyr",
-  "project_id": "b79d919f-f2d0-4d0f-8717-f149b0d38b08"
+  "project_id": "b79d919f-f2d0-4d0f-8717-f149b0d38b08",
+  "global_dolt_database": "beads_global"
 }

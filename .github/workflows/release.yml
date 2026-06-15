@@ -57,9 +57,7 @@ jobs:
       - name: Compile engine (all targets)
         run: |
           mkdir -p dist
-          ENGINE_FLAGS="--allow-net --allow-env \
-            --allow-read=.env,./data,/var/lib/zephyr,/etc/zephyr \
-            --allow-write=./data,/var/lib/zephyr"
+          ENGINE_FLAGS="--allow-net --allow-env --allow-read --allow-write"
 
           for target in \
             x86_64-unknown-linux-gnu \
